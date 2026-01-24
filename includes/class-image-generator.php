@@ -2,6 +2,7 @@
 /**
  * Image Generator Class
  * Handles the generation of photo cards
+ * Fixes Bengali Font Rendering Issues
  */
 
 if (!defined('ABSPATH')) {
@@ -14,13 +15,24 @@ class MJASHIK_NPC_Image_Generator {
      * Generate photo card image
      */
     public static function mjashik_generate_card($post_id) {
-        // Get post data
-        $post = get_post($post_id);
-        if (!$post) {
-            return false;
+        // ১. সার্ভারে Imagick আছে কিনা চেক করা (সেরা কোয়ালিটির জন্য)
+        if (extension_loaded('imagick') && class_exists('Imagick')) {
+            return self::mjashik_generate_card_imagick($post_id);
+        } else {
+            // ২. না থাকলে GD ব্যবহার করা (সাথে বাংলা ফিক্সার)
+            return self::mjashik_generate_card_gd($post_id);
         }
-        
-        // Get settings
+    }
+
+    /**
+     * ==========================================
+     * METHOD 1: IMAGICK (Best for Bengali)
+     * ==========================================
+     */
+    private static function mjashik_generate_card_imagick($post_id) {
+        $post = get_post($post_id);
+        if (!$post) return false;
+
         $logo_url = get_option('mjashik_npc_logo_url');
         $background_url = get_option('mjashik_npc_background_url');
         $font_color = get_option('mjashik_npc_font_color', '#ffffff');
@@ -28,328 +40,384 @@ class MJASHIK_NPC_Image_Generator {
         $title_font_size = get_option('mjashik_npc_title_font_size', 32);
         $date_font_size = get_option('mjashik_npc_date_font_size', 20);
         $website_url = get_option('mjashik_npc_website_url', '');
+
+        // ক্যানভাস তৈরি
+        $image = new Imagick();
+        $image->newImage(800, 800, new ImagickPixel('white'));
+        $image->setImageFormat('jpg');
+
+        // ব্যাকগ্রাউন্ড
+        $bg_loaded = false;
+        if ($background_url) {
+            $bg_path = self::mjashik_get_local_path($background_url);
+            if ($bg_path && file_exists($bg_path)) {
+                try {
+                    $background = new Imagick($bg_path);
+                    $background->resizeImage(800, 800, Imagick::FILTER_LANCZOS, 1, true);
+                    $geo = $background->getImageGeometry();
+                    $x = ($geo['width'] - 800) / 2;
+                    $y = ($geo['height'] - 800) / 2;
+                    $background->cropImage(800, 800, $x, $y);
+                    $image->compositeImage($background, Imagick::COMPOSITE_OVER, 0, 0);
+                    $bg_loaded = true;
+                } catch (Exception $e) {}
+            }
+        }
         
-        // Get post thumbnail
-        $thumbnail_id = get_post_thumbnail_id($post_id);
-        $thumbnail_url = wp_get_attachment_url($thumbnail_id);
+        if (!$bg_loaded) {
+            $draw = new ImagickDraw();
+            $draw->setFillColor('#333333');
+            $draw->rectangle(0, 0, 800, 800);
+            $image->drawImage($draw);
+        }
+
+        // ওভারলে (কালো ছায়া)
+        $draw = new ImagickDraw();
+        $draw->setFillColor(new ImagickPixel('rgba(0, 0, 0, 0.4)'));
+        $draw->rectangle(0, 0, 800, 800);
+        $image->drawImage($draw);
+
+        // লোগো
+        if ($logo_url) {
+            $logo_path = self::mjashik_get_local_path($logo_url);
+            if ($logo_path && file_exists($logo_path)) {
+                try {
+                    $logo = new Imagick($logo_path);
+                    $logo->scaleImage(150, 0);
+                    $geo = $logo->getImageGeometry();
+                    $x = (800 - $geo['width']) / 2;
+                    $image->compositeImage($logo, Imagick::COMPOSITE_OVER, $x, 30);
+                } catch (Exception $e) {}
+            }
+        }
+
+        // ফিচার্ড ইমেজ (গোল)
+        $thumb_id = get_post_thumbnail_id($post_id);
+        if ($thumb_id) {
+            $thumb_path = get_attached_file($thumb_id);
+            if ($thumb_path && file_exists($thumb_path)) {
+                try {
+                    $photo = new Imagick($thumb_path);
+                    $photo->cropThumbnailImage(300, 300);
+                    
+                    // মাস্ক তৈরি
+                    $mask = new Imagick();
+                    $mask->newImage(300, 300, new ImagickPixel('transparent'));
+                    $mask->setImageFormat('png');
+                    $draw_mask = new ImagickDraw();
+                    $draw_mask->setFillColor('white');
+                    $draw_mask->circle(150, 150, 150, 298);
+                    $mask->drawImage($draw_mask);
+                    
+                    $photo->compositeImage($mask, Imagick::COMPOSITE_DSTIN, 0, 0);
+                    $image->compositeImage($photo, Imagick::COMPOSITE_OVER, 250, 200); // (800-300)/2 = 250
+                    
+                    $photo->clear(); $mask->clear();
+                } catch (Exception $e) {}
+            }
+        }
+
+        // ফন্ট সেটআপ
+        $font_path = self::mjashik_get_font_path();
+        $draw_text = new ImagickDraw();
+        $draw_text->setFillColor($font_color);
+        if ($font_path) {
+            $draw_text->setFont($font_path);
+        }
+        $draw_text->setTextEncoding('UTF-8');
+
+        // তারিখ
+        $date_text = date_i18n($date_format, strtotime($post->post_date));
+        self::mjashik_imagick_text_centered($image, $draw_text, $date_text, 530, $date_font_size);
+
+        // টাইটেল (বাংলা ফিক্স সহ)
+        $title = $post->post_title;
+        // ইউনিকোড নরমালাইজেশন (গুরুত্বপূর্ণ)
+        if (class_exists('Normalizer')) {
+            $title = Normalizer::normalize($title, Normalizer::FORM_C);
+        }
         
-        // Create canvas
+        // লাইন ব্রেক ঠিক করা
+        self::mjashik_imagick_text_wrapped($image, $draw_text, $title, 580, $title_font_size, 700);
+
+        // ওয়েবসাইট
+        if (!empty($website_url)) {
+            self::mjashik_imagick_text_centered($image, $draw_text, $website_url, 750, 16);
+        }
+
+        // সেভ করা
+        $upload_dir = wp_upload_dir();
+        $filename = 'card-' . $post_id . '-' . time() . '.jpg';
+        $filepath = $upload_dir['path'] . '/' . $filename;
+        
+        $image->setImageCompressionQuality(90);
+        $image->writeImage($filepath);
+        $image->clear();
+
+        return $upload_dir['url'] . '/' . $filename;
+    }
+
+    /**
+     * ==========================================
+     * METHOD 2: GD LIBRARY (Fallback)
+     * ==========================================
+     */
+    private static function mjashik_generate_card_gd($post_id) {
+        $post = get_post($post_id);
+        if (!$post) return false;
+        
+        // সেটিংস
+        $logo_url = get_option('mjashik_npc_logo_url');
+        $background_url = get_option('mjashik_npc_background_url');
+        $font_color = get_option('mjashik_npc_font_color', '#ffffff');
+        $date_format = get_option('mjashik_npc_date_format', 'd F Y');
+        $title_font_size = get_option('mjashik_npc_title_font_size', 32);
+        
+        // ক্যানভাস
         $width = 800;
         $height = 800;
         $image = imagecreatetruecolor($width, $height);
         
-        // Load background image
+        // ব্যাকগ্রাউন্ড
+        $bg_loaded = false;
         if ($background_url) {
-            $background = self::mjashik_load_image($background_url);
+            $background = self::mjashik_load_image_gd($background_url);
             if ($background) {
                 imagecopyresampled($image, $background, 0, 0, 0, 0, $width, $height, imagesx($background), imagesy($background));
                 imagedestroy($background);
-            } else {
-                error_log('MJASHIK NPC: Failed to load background from: ' . $background_url);
-                // Use default background
-                $bg_color = imagecolorallocate($image, 30, 30, 30);
-                imagefill($image, 0, 0, $bg_color);
+                $bg_loaded = true;
             }
-        } else {
-            // Default background color
-            $bg_color = imagecolorallocate($image, 30, 30, 30);
-            imagefill($image, 0, 0, $bg_color);
+        }
+        if (!$bg_loaded) {
+            $col = imagecolorallocate($image, 50, 50, 50);
+            imagefill($image, 0, 0, $col);
         }
         
-        // Add semi-transparent overlay for better text readability (lighter overlay)
-        $overlay = imagecolorallocatealpha($image, 0, 0, 0, 30);
+        // ওভারলে
+        $overlay = imagecolorallocatealpha($image, 0, 0, 0, 80); // ~60% transparent
         imagefilledrectangle($image, 0, 0, $width, $height, $overlay);
         
-        // Convert hex color to RGB
+        // টেক্সট কালার
         $rgb = self::mjashik_hex_to_rgb($font_color);
         $text_color = imagecolorallocate($image, $rgb['r'], $rgb['g'], $rgb['b']);
         
-        // Load logo with transparency support
+        // লোগো
         if ($logo_url) {
-            $logo = self::mjashik_load_image($logo_url);
+            $logo = self::mjashik_load_image_gd($logo_url);
             if ($logo) {
-                // Enable alpha blending for transparency
-                imagealphablending($image, true);
-                imagesavealpha($image, true);
-                
-                $logo_width = 150;
-                $logo_height = (imagesy($logo) / imagesx($logo)) * $logo_width;
-                $logo_x = ($width - $logo_width) / 2;
-                $logo_y = 30;
-                
-                // Create temporary image for logo with transparency
-                $logo_resized = imagecreatetruecolor($logo_width, $logo_height);
-                imagealphablending($logo_resized, false);
-                imagesavealpha($logo_resized, true);
-                $transparent = imagecolorallocatealpha($logo_resized, 0, 0, 0, 127);
-                imagefill($logo_resized, 0, 0, $transparent);
-                imagealphablending($logo_resized, true);
-                
-                imagecopyresampled($logo_resized, $logo, 0, 0, 0, 0, $logo_width, $logo_height, imagesx($logo), imagesy($logo));
-                imagecopy($image, $logo_resized, $logo_x, $logo_y, 0, 0, $logo_width, $logo_height);
-                
+                $lw = 150;
+                $lh = (imagesy($logo)/imagesx($logo)) * $lw;
+                $lx = ($width - $lw)/2;
+                imagecopyresampled($image, $logo, $lx, 30, 0, 0, $lw, $lh, imagesx($logo), imagesy($logo));
                 imagedestroy($logo);
-                imagedestroy($logo_resized);
-            } else {
-                // Logo failed to load - add debug text
-                error_log('MJASHIK NPC: Failed to load logo from: ' . $logo_url);
-                
-                // Add debug text on image
-                $debug_color = imagecolorallocate($image, 255, 0, 0);
-                $font_path = self::mjashik_get_font_path();
-                if ($font_path && file_exists($font_path)) {
-                    imagettftext($image, 20, 0, 350, 50, $debug_color, $font_path, 'LOGO FAILED');
-                }
             }
         }
-        
-        // Load post thumbnail
-        if ($thumbnail_url) {
-            $photo = self::mjashik_load_image($thumbnail_url);
+
+        // ছবি (বৃত্তাকার)
+        $tid = get_post_thumbnail_id($post_id);
+        if ($tid) {
+            $turl = wp_get_attachment_url($tid);
+            $photo = self::mjashik_load_image_gd($turl);
             if ($photo) {
-                $photo_size = 300;
-                $photo_x = ($width - $photo_size) / 2;
-                $photo_y = 200;
+                $ps = 300; // Photo Size
+                $px = ($width - $ps)/2;
                 
-                // Create circular mask
-                $mask = imagecreatetruecolor($photo_size, $photo_size);
-                $transparent = imagecolorallocatealpha($mask, 255, 255, 255, 127);
-                imagefill($mask, 0, 0, $transparent);
-                $white = imagecolorallocate($mask, 255, 255, 255);
-                imagefilledellipse($mask, $photo_size/2, $photo_size/2, $photo_size, $photo_size, $white);
+                // ক্রপ এবং রিসাইজ
+                $temp = imagecreatetruecolor($ps, $ps);
+                imagecopyresampled($temp, $photo, 0, 0, 0, 0, $ps, $ps, imagesx($photo), imagesy($photo));
                 
-                // Resize photo
-                $photo_resized = imagecreatetruecolor($photo_size, $photo_size);
-                imagecopyresampled($photo_resized, $photo, 0, 0, 0, 0, $photo_size, $photo_size, imagesx($photo), imagesy($photo));
+                // মাস্কিং (Circular Mask via Alpha)
+                $final = imagecreatetruecolor($ps, $ps);
+                imagealphablending($final, false);
+                imagesavealpha($final, true);
+                $trans = imagecolorallocatealpha($final, 0, 0, 0, 127);
+                imagefill($final, 0, 0, $trans);
                 
-                // Apply mask
-                imagecolortransparent($mask, $white);
-                imagecopymerge($image, $photo_resized, $photo_x, $photo_y, 0, 0, $photo_size, $photo_size, 100);
+                $r = $ps / 2;
+                for ($x=0; $x<$ps; $x++) {
+                    for ($y=0; $y<$ps; $y++) {
+                        if (((($x-$r)*($x-$r)) + (($y-$r)*($y-$r))) <= ($r*$r)) {
+                            $c = imagecolorat($temp, $x, $y);
+                            imagesetpixel($final, $x, $y, $c);
+                        }
+                    }
+                }
                 
-                imagedestroy($photo);
-                imagedestroy($photo_resized);
-                imagedestroy($mask);
+                imagecopy($image, $final, $px, 200, 0, 0, $ps, $ps);
+                imagedestroy($photo); imagedestroy($temp); imagedestroy($final);
             }
         }
-        
-        // Add date
-        $date_text = date_i18n($date_format, strtotime($post->post_date));
+
+        // ফন্ট চেক
         $font_path = self::mjashik_get_font_path();
         
-        if ($font_path && file_exists($font_path)) {
-            // Add date
-            $date_y = 530;
-            self::mjashik_add_text_centered($image, $date_font_size, $date_y, $text_color, $font_path, $date_text, $width);
+        if ($font_path) {
+            // তারিখ
+            $date = date_i18n($date_format, strtotime($post->post_date));
+            self::mjashik_gd_text_centered($image, 20, 530, $text_color, $font_path, $date, $width);
             
-            // Add title (wrapped) - Normalize text first
+            // টাইটেল (GD স্পেশাল ফিক্স)
             $title = $post->post_title;
+            // বাংলা টেক্সট ফিক্স (ই-কার সমস্যা সমাধানের চেষ্টা)
+            $title = self::mjashik_fix_bangla_gd($title); 
             
-            // Ensure proper UTF-8 encoding
-            if (!mb_check_encoding($title, 'UTF-8')) {
-                $title = mb_convert_encoding($title, 'UTF-8', 'auto');
+            self::mjashik_gd_text_wrapped($image, $title_font_size, 580, $text_color, $font_path, $title, 700, $width);
+            
+            // ওয়েবসাইট
+            $web = get_option('mjashik_npc_website_url', '');
+            if ($web) {
+                self::mjashik_gd_text_centered($image, 16, 750, $text_color, $font_path, $web, $width);
             }
-            
-            // Normalize Unicode (NFC form for Bengali)
-            if (class_exists('Normalizer')) {
-                $title = Normalizer::normalize($title, Normalizer::FORM_C);
-            }
-            
-            $title_y = 580;
-            $max_width = $width - 100;
-            self::mjashik_add_wrapped_text($image, $title_font_size, $title_y, $text_color, $font_path, $title, $max_width, $width);
-            
-            // Add website URL at bottom
-            if (!empty($website_url)) {
-                $url_y = 750;
-                $url_font_size = 16;
-                self::mjashik_add_text_centered($image, $url_font_size, $url_y, $text_color, $font_path, $website_url, $width);
-            }
+        } else {
+            // ফন্ট না পেলে ডিবাগ মেসেজ
+            $red = imagecolorallocate($image, 255, 0, 0);
+            imagestring($image, 5, 250, 400, "Error: Font file not found!", $red);
         }
-        
-        // Save image
-        $upload_dir = wp_upload_dir();
-        $filename = 'photo-card-' . $post_id . '-' . time() . '.jpg';
-        $filepath = $upload_dir['path'] . '/' . $filename;
-        
-        imagejpeg($image, $filepath, 90);
+
+        // ফাইল সেভ
+        $upload = wp_upload_dir();
+        $file = 'card-gd-' . $post_id . '-' . time() . '.jpg';
+        $path = $upload['path'] . '/' . $file;
+        imagejpeg($image, $path, 90);
         imagedestroy($image);
         
-        return $upload_dir['url'] . '/' . $filename;
+        return $upload['url'] . '/' . $file;
     }
-    
+
     /**
-     * Load image from URL or local path
+     * ==========================================
+     * HELPERS
+     * ==========================================
      */
-    private static function mjashik_load_image($url) {
-        if (empty($url)) {
-            return false;
-        }
-        
-        // Method 1: Try WordPress uploads directory
-        $upload_dir = wp_upload_dir();
-        
-        // Remove protocol and domain to get relative path
-        $parsed_url = parse_url($url);
-        if (isset($parsed_url['path'])) {
-            // Try to find file in WordPress uploads
-            $relative_path = $parsed_url['path'];
-            
-            // Check if it's in wp-content/uploads
-            if (strpos($relative_path, '/wp-content/uploads/') !== false) {
-                $file_path = ABSPATH . ltrim(substr($relative_path, strpos($relative_path, 'wp-content/')), '/');
-                
-                if (file_exists($file_path)) {
-                    return self::mjashik_create_image_from_file($file_path);
-                }
-            }
-            
-            // Try upload basedir
-            $filename = basename($url);
-            $possible_paths = array(
-                $upload_dir['basedir'] . '/' . $filename,
-                $upload_dir['path'] . '/' . $filename,
-            );
-            
-            foreach ($possible_paths as $path) {
-                if (file_exists($path)) {
-                    return self::mjashik_create_image_from_file($path);
-                }
-            }
-        }
-        
-        // Method 2: Try direct file_get_contents
-        $image_data = @file_get_contents($url);
-        if ($image_data) {
-            $image = @imagecreatefromstring($image_data);
-            if ($image) {
-                return $image;
-            }
-        }
-        
-        error_log('MJASHIK NPC: Failed to load image from: ' . $url);
-        return false;
-    }
-    
-    /**
-     * Create image resource from file path
-     */
-    private static function mjashik_create_image_from_file($file_path) {
-        if (!file_exists($file_path)) {
-            return false;
-        }
-        
-        $ext = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
-        
-        switch ($ext) {
-            case 'jpg':
-            case 'jpeg':
-                return @imagecreatefromjpeg($file_path);
-            case 'png':
-                return @imagecreatefrompng($file_path);
-            case 'gif':
-                return @imagecreatefromgif($file_path);
-            case 'webp':
-                return @imagecreatefromwebp($file_path);
-            default:
-                return @imagecreatefromstring(file_get_contents($file_path));
-        }
-    }
-    
-    /**
-     * Convert hex color to RGB
-     */
-    private static function mjashik_hex_to_rgb($hex) {
-        $hex = str_replace('#', '', $hex);
-        
-        if (strlen($hex) == 3) {
-            $r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
-            $g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
-            $b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
-        } else {
-            $r = hexdec(substr($hex, 0, 2));
-            $g = hexdec(substr($hex, 2, 2));
-            $b = hexdec(substr($hex, 4, 2));
-        }
-        
-        return array('r' => $r, 'g' => $g, 'b' => $b);
-    }
-    
-    /**
-     * Get font path for Bengali text
-     */
+
+    // ফন্ট পাথ খুঁজে বের করার শক্তিশালী ফাংশন
     private static function mjashik_get_font_path() {
-        // Try to use a Bengali-compatible font
-        $font_paths = array(
-            MJASHIK_NPC_PLUGIN_DIR . 'assets/fonts/NotoSansBengali-Regular.ttf',
-            MJASHIK_NPC_PLUGIN_DIR . 'assets/fonts/SolaimanLipi.ttf',
-            '/usr/share/fonts/truetype/noto/NotoSansBengali-Regular.ttf',
-            'C:/Windows/Fonts/arial.ttf'
-        );
+        // বর্তমান ফাইলের ডিরেক্টরি থেকে ফন্ট ফোল্ডারের সঠিক পথ বের করা
+        $base_dir = dirname(dirname(__FILE__)); // goes up from 'includes' to plugin root
         
-        foreach ($font_paths as $path) {
-            if (file_exists($path)) {
-                return $path;
+        $fonts = array(
+            $base_dir . '/assets/fonts/NotoSansBengali-Bold.ttf',
+            $base_dir . '/assets/fonts/NotoSansBengali-Regular.ttf',
+            $base_dir . '/assets/fonts/SolaimanLipi.ttf'
+        );
+
+        foreach ($fonts as $font) {
+            if (file_exists($font)) {
+                return $font;
             }
         }
         
         return false;
     }
-    
-    /**
-     * Add centered text
-     */
-    private static function mjashik_add_text_centered($image, $font_size, $y, $color, $font_path, $text, $width) {
-        $bbox = imagettfbbox($font_size, 0, $font_path, $text);
-        $text_width = abs($bbox[4] - $bbox[0]);
-        $x = ($width - $text_width) / 2;
-        
-        imagettftext($image, $font_size, 0, $x, $y, $color, $font_path, $text);
+
+    // GD এর জন্য বাংলা টেক্সট ফিক্সার (Experimental)
+    private static function mjashik_fix_bangla_gd($text) {
+        // ইউনিকোড নরমালাইজেশন
+        if (class_exists('Normalizer')) {
+            $text = Normalizer::normalize($text, Normalizer::FORM_C);
+        }
+        // নোট: GD তে ই-কার (ি) সাধারণত বর্ণের পরে বসে যায়।
+        // এটি ফিক্স করা খুব জটিল, তবে সাধারণ রেন্ডারিং এর জন্য আমরা টেক্সটকে অক্ষত রাখাই ভালো।
+        // ভুলভাবে সোয়াপ করলে যুক্তবর্ণ আরও ভেঙ্গে যেতে পারে।
+        return $text;
     }
-    
-    /**
-     * Add wrapped text - Bengali safe (only breaks at spaces)
-     */
-    private static function mjashik_add_wrapped_text($image, $font_size, $y, $color, $font_path, $text, $max_width, $canvas_width) {
-        $lines = array();
-        $current_line = '';
-        
-        // Split by spaces to get words
+
+    // Imagick Helpers
+    private static function mjashik_imagick_text_centered($image, $draw, $text, $y, $size) {
+        $draw->setFontSize($size);
+        $metrics = $image->queryFontMetrics($draw, $text);
+        $x = (800 - $metrics['textWidth']) / 2;
+        $image->annotateImage($draw, $x, $y + $metrics['ascender'], 0, $text);
+    }
+
+    private static function mjashik_imagick_text_wrapped($image, $draw, $text, $y, $size, $max_width) {
+        $draw->setFontSize($size);
         $words = explode(' ', $text);
+        $lines = [];
+        $curr = '';
         
         foreach ($words as $word) {
-            // Skip empty words
-            if (empty(trim($word))) {
-                continue;
-            }
-            
-            $test_line = empty($current_line) ? $word : $current_line . ' ' . $word;
-            $bbox = imagettfbbox($font_size, 0, $font_path, $test_line);
-            $test_width = abs($bbox[4] - $bbox[0]);
-            
-            if ($test_width > $max_width && !empty($current_line)) {
-                // Line is full, save current line and start new one
-                $lines[] = $current_line;
-                $current_line = $word;
+            if (trim($word) == '') continue;
+            $test = $curr === '' ? $word : $curr . ' ' . $word;
+            $m = $image->queryFontMetrics($draw, $test);
+            if ($m['textWidth'] > $max_width && $curr !== '') {
+                $lines[] = $curr;
+                $curr = $word;
             } else {
-                $current_line = $test_line;
+                $curr = $test;
             }
+            if (count($lines) >= 3) break;
+        }
+        if ($curr !== '' && count($lines) < 3) $lines[] = $curr;
+        
+        foreach ($lines as $i => $line) {
+            self::mjashik_imagick_text_centered($image, $draw, $line, $y + ($i * $size * 1.5), $size);
+        }
+    }
+
+    // GD Helpers
+    private static function mjashik_gd_text_centered($im, $size, $y, $col, $font, $text, $w) {
+        $box = imagettfbbox($size, 0, $font, $text);
+        $tw = abs($box[4] - $box[0]);
+        $x = ($w - $tw) / 2;
+        imagettftext($im, $size, 0, $x, $y, $col, $font, $text);
+    }
+
+    private static function mjashik_gd_text_wrapped($im, $size, $y, $col, $font, $text, $mw, $cw) {
+        $words = explode(' ', $text);
+        $lines = [];
+        $curr = '';
+        
+        foreach ($words as $word) {
+            $test = $curr === '' ? $word : $curr . ' ' . $word;
+            $box = imagettfbbox($size, 0, $font, $test);
+            $tw = abs($box[4] - $box[0]);
             
-            // Stop if we have 3 lines already
-            if (count($lines) >= 3) {
-                break;
+            // GD বাংলা উইডথ বাগ ফিক্সের জন্য ১.১ বাফার
+            if (($tw * 1.1) > $mw && $curr !== '') {
+                $lines[] = $curr;
+                $curr = $word;
+            } else {
+                $curr = $test;
             }
+            if (count($lines) >= 3) break;
         }
+        if ($curr !== '' && count($lines) < 3) $lines[] = $curr;
         
-        // Add remaining text
-        if (!empty($current_line) && count($lines) < 3) {
-            $lines[] = $current_line;
+        foreach ($lines as $i => $line) {
+            self::mjashik_gd_text_centered($im, $size, $y + ($i * $size * 1.6), $col, $font, $line, $cw);
         }
+    }
+
+    private static function mjashik_get_local_path($url) {
+        if (!$url) return false;
+        $upload = wp_upload_dir();
+        $path = str_replace($upload['baseurl'], $upload['basedir'], $url);
+        if (file_exists($path)) return $path;
         
-        // Render lines
-        $line_height = $font_size + 10;
-        foreach ($lines as $index => $line) {
-            $line_y = $y + ($index * $line_height);
-            self::mjashik_add_text_centered($image, $font_size, $line_y, $color, $font_path, $line, $canvas_width);
+        // Fallback for local testing
+        $parsed = parse_url($url);
+        if (isset($parsed['path']) && file_exists($_SERVER['DOCUMENT_ROOT'] . $parsed['path'])) {
+            return $_SERVER['DOCUMENT_ROOT'] . $parsed['path'];
         }
+        return false;
+    }
+
+    private static function mjashik_load_image_gd($url) {
+        $path = self::mjashik_get_local_path($url);
+        if (!$path) return false;
+        $info = getimagesize($path);
+        switch ($info['mime']) {
+            case 'image/jpeg': return imagecreatefromjpeg($path);
+            case 'image/png': return imagecreatefrompng($path);
+            case 'image/gif': return imagecreatefromgif($path);
+            default: return imagecreatefromstring(file_get_contents($path));
+        }
+    }
+
+    private static function mjashik_hex_to_rgb($hex) {
+        $hex = str_replace('#', '', $hex);
+        if (strlen($hex) == 3) $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
+        return ['r' => hexdec(substr($hex,0,2)), 'g' => hexdec(substr($hex,2,2)), 'b' => hexdec(substr($hex,4,2))];
     }
 }

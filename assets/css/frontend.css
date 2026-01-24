@@ -1,4 +1,18 @@
 /* Frontend Styles */
+@font-face {
+    font-family: 'Noto Sans Bengali';
+    src: url('../fonts/NotoSansBengali-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans Bengali';
+    src: url('../fonts/NotoSansBengali-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
 .mjashik-photo-card-section {
     margin: 30px 0;
     padding: 20px;
