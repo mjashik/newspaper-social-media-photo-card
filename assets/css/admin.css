@@ -1,0 +1,26 @@
+/* Admin Styles */
+.mjashik-upload-button {
+    margin-left: 10px;
+}
+
+.mjashik-image-preview {
+    margin-top: 10px;
+}
+
+.mjashik-image-preview img {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.mjashik-color-picker {
+    max-width: 100px;
+}
+
+.wrap h1 {
+    margin-bottom: 20px;
+}
+
+.form-table th {
+    width: 200px;
+}
