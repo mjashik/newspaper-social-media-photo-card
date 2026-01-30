@@ -111,7 +111,7 @@ class MJASHIK_NPC_Post_Integration {
             <div id='npc-card-capture' style='width: {$card_w}px; height: {$card_h}px; position: relative; overflow: hidden; font-family: \"Noto Sans Bengali\", sans-serif; background: #fff; display: flex; flex-direction: column;'>
                 
                 <!-- 1. FEATURED IMAGE AREA (TOP) -->
-                <div style='position: relative; width: 100%; height: {$image_h}px; overflow: hidden; flex-shrink: 0;'>
+                <div style='position: relative; width: 100%; height: auto; min-height: 200px; flex: 1 1 auto; overflow: hidden;'>
                     " . ($thumbnail_url 
                         ? "<img src='{$thumbnail_url}' style='width: 100%; height: 100%; object-fit: cover; object-position: center top;' crossorigin='anonymous'>" 
                         : "<div style='width:100%; height:100%; background:#ddd;'></div>") . "
@@ -132,7 +132,7 @@ class MJASHIK_NPC_Post_Integration {
                 </div>
 
                 <!-- 2. TEXT AREA (MIDDLE) - PREMIUM LOOK -->
-                <div style='position: relative; width: 100%; height: {$text_h}px; border-top: 6px solid #e74c3c; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 40px; text-align: center; flex-grow: 1; overflow: hidden;'>
+                <div style='position: relative; width: 100%; height: auto; border-top: 6px solid #e74c3c; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 40px; text-align: center; flex: 0 0 auto; overflow: hidden;'>
                     
                     <!-- Background Layer -->
                     <div style='position: absolute; top: 0; left: 0; width: 100%; height: 100%; {$text_area_bg} z-index: 0;'></div>
@@ -151,7 +151,7 @@ class MJASHIK_NPC_Post_Integration {
                     <!-- HEADLINE CONTAINER -->
                     <!-- This container ensures the text pops with a background if needed, or simply centers perfectly -->
                     <div style='position: relative; z-index: 10; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0;'>
-                        <h1 style='margin: 0; padding: 0; font-size: 42px; line-height: 1.4; font-weight: 700; color: {$font_color}; width: 100%; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 1px rgba(0,0,0,0.1);'>
+                        <h1 style='margin: 0; padding: 0; font-size: 42px; line-height: 1.4; font-weight: 700; color: {$font_color}; width: 100%; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 1px rgba(0,0,0,0.1);'>
                             {$title}
                         </h1>
                     </div>
