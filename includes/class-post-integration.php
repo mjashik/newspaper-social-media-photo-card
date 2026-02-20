@@ -147,7 +147,11 @@ class MJASHIK_NPC_Post_Integration {
         $footer_bg      = get_option('mjashik_npc_footer_bg_color', '#2c3e50');
         $footer_color   = get_option('mjashik_npc_footer_text_color', '#ffffff');
         $date_format    = get_option('mjashik_npc_date_format', 'd F Y');
+        
+        // Clean up website URL for display (remove http/https)
         $website_url    = get_option('mjashik_npc_website_url', '');
+        $website_url    = preg_replace('#^https?://#', '', $website_url);
+        
         $title_fs       = get_option('mjashik_npc_title_font_size', 42);
         
         $thumbnail_url = get_the_post_thumbnail_url($post_id, 'full');
@@ -209,7 +213,7 @@ class MJASHIK_NPC_Post_Integration {
                 <!-- 3. FOOTER — fixed height, customizable bg & text color -->
                 <div style='width:100%; height:{$footer_h}px; background:" . esc_attr($footer_bg) . "; color:" . esc_attr($footer_color) . "; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; letter-spacing:1.5px; flex:0 0 {$footer_h}px; position:relative; overflow:hidden;'>
                     <div style='position:absolute; top:0; left:0; width:100%; height:4px; background:rgba(255,255,255,0.1);'></div>
-                    <span style='text-shadow:0 2px 4px rgba(0,0,0,0.2);'>" . esc_url($website_url) . "</span>
+                    <span style='text-shadow:0 2px 4px rgba(0,0,0,0.2);'>" . esc_html($website_url) . "</span>
                 </div>
 
             </div>
