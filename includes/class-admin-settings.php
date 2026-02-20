@@ -148,7 +148,7 @@ class MJASHIK_NPC_Admin_Settings {
 
             <!-- LEFT COLUMN: Settings Form -->
             <div style="flex:1 1 0; min-width:400px;">
-            <form method="post" action="options.php">
+            <form method="post" action="options.php" id="mjashik_npc_main_form">
                 <?php settings_fields('mjashik_npc_settings'); ?>
                 
                 <table class="form-table">
@@ -357,26 +357,36 @@ class MJASHIK_NPC_Admin_Settings {
                         </td>
                     </tr>
                 </table>
+            </form>
+
+            <!-- Buttons Layout: Side by Side (valid HTML5) -->
+            <div style="display:flex; align-items:center; gap:15px; margin-top:20px; padding:10px 0;">
                 
-                <div style="display:flex; align-items:center; gap:15px; margin-top:20px;">
-                    <?php submit_button('', 'primary', 'submit', false); ?>
-                    
+                <!-- Save Button (Hooks into form via form attribute) -->
+                <button type="submit" form="mjashik_npc_main_form" class="button button-primary">
+                    <?php esc_html_e('Save Changes', 'news-photo-card'); ?>
+                </button>
+                
+                <!-- Reset Form -->
+                <form method="post" action="<?php echo esc_url(admin_url('admin.php?page=news-photo-card')); ?>" style="margin:0;">
                     <button type="submit" name="mjashik_npc_reset_settings" value="1" class="button" onclick="return confirm('<?php esc_attr_e('Are you sure you want to reset all settings to their default values? This cannot be undone.', 'news-photo-card'); ?>');">
                         <?php esc_html_e('Reset to Defaults', 'news-photo-card'); ?>
                     </button>
                     <?php wp_nonce_field('mjashik_npc_reset_action', 'mjashik_npc_reset_nonce'); ?>
-                </div>
-            </form>
+                </form>
+                
+            </div>
+            
             </div><!-- /LEFT COLUMN -->
 
             <?php
             // Current settings for preview
             $prev_logo         = get_option('mjashik_npc_logo_url');
             $prev_font_color   = get_option('mjashik_npc_font_color', '#1a1a1a');
-            $prev_title_bg     = get_option('mjashik_npc_title_area_bg_color', '#ffffff');
-            $prev_date_bg      = get_option('mjashik_npc_date_bg_color', '#e74c3c');
+            $prev_title_bg     = get_option('mjashik_npc_title_area_bg_color', '#AA0001');
+            $prev_date_bg      = get_option('mjashik_npc_date_bg_color', '#AA0001');
             $prev_date_color   = get_option('mjashik_npc_date_text_color', '#ffffff');
-            $prev_footer_bg    = get_option('mjashik_npc_footer_bg_color', '#2c3e50');
+            $prev_footer_bg    = get_option('mjashik_npc_footer_bg_color', '#AA0001');
             $prev_footer_color = get_option('mjashik_npc_footer_text_color', '#ffffff');
             $prev_title_size   = (int) get_option('mjashik_npc_title_font_size', 42);
             $prev_date_fmt     = get_option('mjashik_npc_date_format', 'd F Y');
@@ -455,7 +465,7 @@ class MJASHIK_NPC_Admin_Settings {
                             <!-- 3. FOOTER — fixed height, custom colors -->
                             <div style="width:100%; height:<?php echo $footer_h; ?>px; background:<?php echo esc_attr($prev_footer_bg); ?>; color:<?php echo esc_attr($prev_footer_color); ?>; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; letter-spacing:1.5px; flex:0 0 <?php echo $footer_h; ?>px; position:relative; overflow:hidden;">
                                 <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:rgba(255,255,255,0.1);"></div>
-                                <span style="text-shadow:0 2px 4px rgba(0,0,0,0.2);"><?php echo esc_html($prev_website ?: 'www.yourwebsite.com'); ?></span>
+                                <span style="text-shadow:0 2px 4px rgba(0,0,0,0.2);"><?php echo esc_html($prev_website ?: 'www.hostbuybd.com'); ?></span>
                             </div>
 
                         </div>
