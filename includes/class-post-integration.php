@@ -51,8 +51,8 @@ class MJASHIK_NPC_Post_Integration {
             
             wp_localize_script('mjashik-npc-admin-js', 'mjashikNPC', array(
                 'post_id' => isset($post) ? $post->ID : 0,
-                'generating_text' => __('Generating...', 'news-photo-card'),
-                'download_text' => __('Download Photo Card', 'news-photo-card'),
+                'generating_text' => __('Generating...', 'newspaper-social-media-photo-card'),
+                'download_text' => __('Download Photo Card', 'newspaper-social-media-photo-card'),
             ));
         }
     }
@@ -67,7 +67,7 @@ class MJASHIK_NPC_Post_Integration {
         <div class="mjashik-npc-admin-container" style="margin-top: 10px; margin-bottom: 20px;">
             <button type="button" id="mjashik-download-card-btn" class="button button-primary button-large">
                 <span class="dashicons dashicons-camera" style="margin-top: 3px; margin-right: 5px;"></span>
-                <?php _e('Download Photo Card', 'news-photo-card'); ?>
+                <?php _e('Download Photo Card', 'newspaper-social-media-photo-card'); ?>
             </button>
             <span id="mjashik-card-loading" style="display: none; margin-left: 10px; vertical-align: middle;">
                 <span class="spinner is-active" style="float: none; margin: 0;"></span> Generating...
@@ -92,8 +92,8 @@ class MJASHIK_NPC_Post_Integration {
             wp_enqueue_script('mjashik-npc-admin-js', MJASHIK_NPC_PLUGIN_URL . 'assets/js/admin.js', array('jquery', 'html2canvas'), MJASHIK_NPC_VERSION, true);
             wp_localize_script('mjashik-npc-admin-js', 'mjashikNPC', array(
                 'post_id' => isset($post) ? $post->ID : 0,
-                'generating_text' => esc_html__('Generating...', 'news-photo-card'),
-                'download_text' => esc_html__('Download Photo Card', 'news-photo-card'),
+                'generating_text' => esc_html__('Generating...', 'newspaper-social-media-photo-card'),
+                'download_text' => esc_html__('Download Photo Card', 'newspaper-social-media-photo-card'),
             ));
         }
     }
@@ -106,13 +106,13 @@ class MJASHIK_NPC_Post_Integration {
             ob_start();
             ?>
             <div class="mjashik-npc-frontend-container" style="margin-top: 30px; margin-bottom: 30px; padding: 20px; background: #f9f9f9; border: 1px solid #eee; border-radius: 8px; text-align: center;">
-                <h4 style="margin-top: 0; margin-bottom: 15px;"><?php esc_html_e('Share this news as a Photo Card', 'news-photo-card'); ?></h4>
+                <h4 style="margin-top: 0; margin-bottom: 15px;"><?php esc_html_e('Share this news as a Photo Card', 'newspaper-social-media-photo-card'); ?></h4>
                 <button type="button" id="mjashik-download-card-btn" class="button" style="background: #2271b1; color: #fff; border-color: #2271b1; padding: 10px 20px; font-size: 16px; border-radius: 4px; cursor: pointer;">
                     <span class="dashicons dashicons-camera" style="vertical-align: middle;"></span>
-                    <?php esc_html_e('Download Photo Card', 'news-photo-card'); ?>
+                    <?php esc_html_e('Download Photo Card', 'newspaper-social-media-photo-card'); ?>
                 </button>
                 <div id="mjashik-card-loading" style="display: none; margin-top: 10px;">
-                    <?php esc_html_e('Generating high-quality image, please wait...', 'news-photo-card'); ?>
+                    <?php esc_html_e('Generating high-quality image, please wait...', 'newspaper-social-media-photo-card'); ?>
                 </div>
             </div>
             <?php

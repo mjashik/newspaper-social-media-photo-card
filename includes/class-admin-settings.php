@@ -22,10 +22,10 @@ class MJASHIK_NPC_Admin_Settings {
      */
     public function mjashik_add_admin_menu() {
         add_menu_page(
-            __('News Photo Card', 'news-photo-card'),
-            __('Photo Card', 'news-photo-card'),
+            __('News Photo Card', 'newspaper-social-media-photo-card'),
+            __('Photo Card', 'newspaper-social-media-photo-card'),
             'manage_options',
-            'news-photo-card',
+            'newspaper-social-media-photo-card',
             array($this, 'mjashik_settings_page'),
             'dashicons-format-image',
             30
@@ -37,46 +37,81 @@ class MJASHIK_NPC_Admin_Settings {
      */
     public function mjashik_register_settings() {
         // Logo setting
-        register_setting('mjashik_npc_settings', 'mjashik_npc_logo_url');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_logo_url', array(
+            'sanitize_callback' => 'esc_url_raw',
+        ));
         
         // Title font color
-        register_setting('mjashik_npc_settings', 'mjashik_npc_font_color');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_font_color', array(
+            'sanitize_callback' => 'sanitize_hex_color',
+        ));
         
         // Logo shadow color
-        register_setting('mjashik_npc_settings', 'mjashik_npc_logo_shadow_color');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_logo_shadow_color', array(
+            'sanitize_callback' => 'sanitize_hex_color',
+        ));
         
         // Title area background color
-        register_setting('mjashik_npc_settings', 'mjashik_npc_title_area_bg_color');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_title_area_bg_color', array(
+            'sanitize_callback' => 'sanitize_hex_color',
+        ));
 
         // Date badge background color
-        register_setting('mjashik_npc_settings', 'mjashik_npc_date_bg_color');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_date_bg_color', array(
+            'sanitize_callback' => 'sanitize_hex_color',
+        ));
 
         // Date badge text color
-        register_setting('mjashik_npc_settings', 'mjashik_npc_date_text_color');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_date_text_color', array(
+            'sanitize_callback' => 'sanitize_hex_color',
+        ));
 
         // Footer background color
-        register_setting('mjashik_npc_settings', 'mjashik_npc_footer_bg_color');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_footer_bg_color', array(
+            'sanitize_callback' => 'sanitize_hex_color',
+        ));
 
         // Footer text color
-        register_setting('mjashik_npc_settings', 'mjashik_npc_footer_text_color');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_footer_text_color', array(
+            'sanitize_callback' => 'sanitize_hex_color',
+        ));
 
         // Date format
-        register_setting('mjashik_npc_settings', 'mjashik_npc_date_format');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_date_format', array(
+            'sanitize_callback' => 'sanitize_text_field',
+        ));
         
         // Show download button
-        register_setting('mjashik_npc_settings', 'mjashik_npc_show_download_button');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_show_download_button', array(
+            'sanitize_callback' => array($this, 'mjashik_sanitize_yes_no'),
+        ));
         
         // Title font size
-        register_setting('mjashik_npc_settings', 'mjashik_npc_title_font_size');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_title_font_size', array(
+            'sanitize_callback' => 'absint',
+        ));
         
         // Date font size
-        register_setting('mjashik_npc_settings', 'mjashik_npc_date_font_size');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_date_font_size', array(
+            'sanitize_callback' => 'absint',
+        ));
         
         // Website URL
-        register_setting('mjashik_npc_settings', 'mjashik_npc_website_url');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_website_url', array(
+            'sanitize_callback' => 'sanitize_text_field',
+        ));
         
         // Watermark opacity
-        register_setting('mjashik_npc_settings', 'mjashik_npc_watermark_opacity');
+        register_setting('mjashik_npc_settings', 'mjashik_npc_watermark_opacity', array(
+            'sanitize_callback' => 'absint',
+        ));
+    }
+    
+    /**
+     * Sanitize yes/no dropdown values
+     */
+    public function mjashik_sanitize_yes_no($value) {
+        return in_array($value, array('yes', 'no'), true) ? $value : 'yes';
     }
     
     /**
@@ -85,11 +120,11 @@ class MJASHIK_NPC_Admin_Settings {
     public function mjashik_process_settings_reset() {
         if (isset($_POST['mjashik_npc_reset_settings']) && isset($_POST['mjashik_npc_reset_nonce'])) {
             if (!wp_verify_nonce($_POST['mjashik_npc_reset_nonce'], 'mjashik_npc_reset_action')) {
-                wp_die(__('Security check failed', 'news-photo-card'));
+                wp_die(__('Security check failed', 'newspaper-social-media-photo-card'));
             }
             
             if (!current_user_can('manage_options')) {
-                wp_die(__('You do not have permission', 'news-photo-card'));
+                wp_die(__('You do not have permission', 'newspaper-social-media-photo-card'));
             }
             
             // Delete all plugin options EXECPT the logo
@@ -107,7 +142,7 @@ class MJASHIK_NPC_Admin_Settings {
             delete_option('mjashik_npc_website_url');
             delete_option('mjashik_npc_watermark_opacity');
             
-            add_settings_error('mjashik_npc_messages', 'mjashik_npc_message', __('Settings restored to default values', 'news-photo-card'), 'updated');
+            add_settings_error('mjashik_npc_messages', 'mjashik_npc_message', __('Settings restored to default values', 'newspaper-social-media-photo-card'), 'updated');
         }
     }
     
@@ -115,7 +150,7 @@ class MJASHIK_NPC_Admin_Settings {
      * Enqueue admin scripts
      */
     public function mjashik_enqueue_admin_scripts($hook) {
-        if ($hook !== 'toplevel_page_news-photo-card') {
+        if ($hook !== 'toplevel_page_newspaper-social-media-photo-card') {
             return;
         }
         
@@ -145,7 +180,7 @@ class MJASHIK_NPC_Admin_Settings {
     public function mjashik_settings_page() {
         ?>
         <div class="wrap">
-            <h1><?php echo esc_html__('News Photo Card Settings', 'news-photo-card'); ?></h1>
+            <h1><?php echo esc_html__('News Photo Card Settings', 'newspaper-social-media-photo-card'); ?></h1>
 
             <!-- Two-column layout: Settings Left, Preview Right -->
             <div style="display:flex; gap:30px; align-items:flex-start; margin-top:15px;">
@@ -158,7 +193,7 @@ class MJASHIK_NPC_Admin_Settings {
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label><?php echo esc_html__('Logo Image', 'news-photo-card'); ?></label>
+                            <label><?php echo esc_html__('Logo Image', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <input type="text" 
@@ -167,7 +202,7 @@ class MJASHIK_NPC_Admin_Settings {
                                    value="<?php echo esc_attr(get_option('mjashik_npc_logo_url')); ?>" 
                                    class="regular-text" />
                             <button type="button" class="button mjashik-upload-button" data-target="mjashik_npc_logo_url">
-                                <?php echo esc_html__('Upload Logo', 'news-photo-card'); ?>
+                                <?php echo esc_html__('Upload Logo', 'newspaper-social-media-photo-card'); ?>
                             </button>
                             <div class="mjashik-image-preview">
                                 <?php if (get_option('mjashik_npc_logo_url')): ?>
@@ -181,7 +216,7 @@ class MJASHIK_NPC_Admin_Settings {
                     <tr>
                         <td colspan="2" style="padding: 15px 0 6px;">
                             <h2 style="margin:0; padding: 8px 12px; background:#2c3e50; color:#fff; border-radius:4px; font-size:14px;">
-                                🎨 <?php esc_html_e('Color Settings', 'news-photo-card'); ?>
+                                🎨 <?php esc_html_e('Color Settings', 'newspaper-social-media-photo-card'); ?>
                             </h2>
                         </td>
                     </tr>
@@ -189,7 +224,7 @@ class MJASHIK_NPC_Admin_Settings {
                     <!-- Logo Shadow Color -->
                     <tr>
                         <th scope="row" style="padding-left:20px;">
-                            <label for="mjashik_npc_logo_shadow_color"><?php esc_html_e('🖼️ Logo Shadow Color', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_logo_shadow_color"><?php esc_html_e('🖼️ Logo Shadow Color', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <input type="color"
@@ -197,14 +232,14 @@ class MJASHIK_NPC_Admin_Settings {
                                    name="mjashik_npc_logo_shadow_color"
                                    value="<?php echo esc_attr(get_option('mjashik_npc_logo_shadow_color', '#000000')); ?>"
                                    style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
-                            <p class="description"><?php esc_html_e('Adds a faint drop shadow behind the logo (helps visibility on light backgrounds).', 'news-photo-card'); ?></p>
+                            <p class="description"><?php esc_html_e('Adds a faint drop shadow behind the logo (helps visibility on light backgrounds).', 'newspaper-social-media-photo-card'); ?></p>
                         </td>
                     </tr>
 
                     <!-- Title Area Colors -->
                     <tr>
                         <th scope="row" style="padding-left:20px;">
-                            <label for="mjashik_npc_font_color"><?php esc_html_e('📝 Title Text Color', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_font_color"><?php esc_html_e('📝 Title Text Color', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <input type="color"
@@ -216,7 +251,7 @@ class MJASHIK_NPC_Admin_Settings {
                     </tr>
                     <tr>
                         <th scope="row" style="padding-left:20px;">
-                            <label for="mjashik_npc_title_area_bg_color"><?php esc_html_e('📝 Title Area Background', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_title_area_bg_color"><?php esc_html_e('📝 Title Area Background', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <input type="color"
@@ -224,14 +259,14 @@ class MJASHIK_NPC_Admin_Settings {
                                    name="mjashik_npc_title_area_bg_color"
                                    value="<?php echo esc_attr(get_option('mjashik_npc_title_area_bg_color', '#AA0001')); ?>"
                                    style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
-                            <p class="description"><?php esc_html_e('Background color of the title/headline area.', 'news-photo-card'); ?></p>
+                            <p class="description"><?php esc_html_e('Background color of the title/headline area.', 'newspaper-social-media-photo-card'); ?></p>
                         </td>
                     </tr>
 
                     <!-- Date Badge Colors -->
                     <tr>
                         <th scope="row" style="padding-left:20px;">
-                            <label for="mjashik_npc_date_bg_color"><?php esc_html_e('📅 Date Badge Background', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_date_bg_color"><?php esc_html_e('📅 Date Badge Background', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <input type="color"
@@ -243,7 +278,7 @@ class MJASHIK_NPC_Admin_Settings {
                     </tr>
                     <tr>
                         <th scope="row" style="padding-left:20px;">
-                            <label for="mjashik_npc_date_text_color"><?php esc_html_e('📅 Date Badge Text Color', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_date_text_color"><?php esc_html_e('📅 Date Badge Text Color', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <input type="color"
@@ -257,7 +292,7 @@ class MJASHIK_NPC_Admin_Settings {
                     <!-- Footer Colors -->
                     <tr>
                         <th scope="row" style="padding-left:20px;">
-                            <label for="mjashik_npc_footer_bg_color"><?php esc_html_e('🌐 Footer Background', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_footer_bg_color"><?php esc_html_e('🌐 Footer Background', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <input type="color"
@@ -269,7 +304,7 @@ class MJASHIK_NPC_Admin_Settings {
                     </tr>
                     <tr>
                         <th scope="row" style="padding-left:20px;">
-                            <label for="mjashik_npc_footer_text_color"><?php esc_html_e('🌐 Footer Text Color', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_footer_text_color"><?php esc_html_e('🌐 Footer Text Color', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <input type="color"
@@ -283,7 +318,7 @@ class MJASHIK_NPC_Admin_Settings {
                     <!-- Watermark Opacity -->
                     <tr>
                         <th scope="row" style="padding-left:20px;">
-                            <label for="mjashik_npc_watermark_opacity"><?php esc_html_e('🔍 Watermark Opacity', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_watermark_opacity"><?php esc_html_e('🔍 Watermark Opacity', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <?php $wm_opacity = (int) get_option('mjashik_npc_watermark_opacity', 8); ?>
@@ -295,14 +330,14 @@ class MJASHIK_NPC_Admin_Settings {
                                    style="width:200px; vertical-align:middle;" 
                                    oninput="document.getElementById('wm_opacity_val').textContent=this.value+'%'" />
                             <span id="wm_opacity_val" style="font-weight:600; margin-left:8px;"><?php echo esc_html($wm_opacity); ?>%</span>
-                            <p class="description"><?php esc_html_e('Set to 0 to hide watermark. Default: 8%', 'news-photo-card'); ?></p>
+                            <p class="description"><?php esc_html_e('Set to 0 to hide watermark. Default: 8%', 'newspaper-social-media-photo-card'); ?></p>
                         </td>
                     </tr>
 
                     
                     <tr>
                         <th scope="row">
-                            <label for="mjashik_npc_title_font_size"><?php echo esc_html__('Title Font Size', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_title_font_size"><?php echo esc_html__('Title Font Size', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <input type="number" 
@@ -311,13 +346,13 @@ class MJASHIK_NPC_Admin_Settings {
                                    value="<?php echo esc_attr(get_option('mjashik_npc_title_font_size', '32')); ?>" 
                                    min="10" 
                                    max="100" />
-                            <span class="description"><?php echo esc_html__('Font size in pixels', 'news-photo-card'); ?></span>
+                            <span class="description"><?php echo esc_html__('Font size in pixels', 'newspaper-social-media-photo-card'); ?></span>
                         </td>
                     </tr>
                     
                     <tr>
                         <th scope="row">
-                            <label for="mjashik_npc_date_font_size"><?php echo esc_html__('Date Font Size', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_date_font_size"><?php echo esc_html__('Date Font Size', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <input type="number" 
@@ -326,13 +361,13 @@ class MJASHIK_NPC_Admin_Settings {
                                    value="<?php echo esc_attr(get_option('mjashik_npc_date_font_size', '20')); ?>" 
                                    min="10" 
                                    max="50" />
-                            <span class="description"><?php echo esc_html__('Font size in pixels', 'news-photo-card'); ?></span>
+                            <span class="description"><?php echo esc_html__('Font size in pixels', 'newspaper-social-media-photo-card'); ?></span>
                         </td>
                     </tr>
                     
                     <tr>
                         <th scope="row">
-                            <label for="mjashik_npc_date_format"><?php echo esc_html__('Date Format', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_date_format"><?php echo esc_html__('Date Format', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <input type="text" 
@@ -341,14 +376,14 @@ class MJASHIK_NPC_Admin_Settings {
                                    value="<?php echo esc_attr(get_option('mjashik_npc_date_format', 'd F Y')); ?>" 
                                    class="regular-text" />
                             <p class="description">
-                                <?php echo esc_html__('PHP date format. Example: d F Y', 'news-photo-card'); ?>
+                                <?php echo esc_html__('PHP date format. Example: d F Y', 'newspaper-social-media-photo-card'); ?>
                             </p>
                         </td>
                     </tr>
                     
                     <tr>
                         <th scope="row">
-                            <label for="mjashik_npc_website_url"><?php echo esc_html__('Website URL', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_website_url"><?php echo esc_html__('Website URL', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <input type="text" 
@@ -358,21 +393,21 @@ class MJASHIK_NPC_Admin_Settings {
                                    class="regular-text" 
                                    placeholder="www.yourwebsite.com" />
                             <p class="description">
-                                <?php echo esc_html__('Website URL to display at the bottom of photo card', 'news-photo-card'); ?>
+                                <?php echo esc_html__('Website URL to display at the bottom of photo card', 'newspaper-social-media-photo-card'); ?>
                             </p>
                         </td>
                     </tr>
                     
                     <tr>
                         <th scope="row">
-                            <label for="mjashik_npc_show_download_button"><?php echo esc_html__('Show Download Button (Frontend)', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_show_download_button"><?php echo esc_html__('Show Download Button (Frontend)', 'newspaper-social-media-photo-card'); ?></label>
                         </th>
                         <td>
                             <select id="mjashik_npc_show_download_button" name="mjashik_npc_show_download_button">
-                                <option value="yes" <?php selected(get_option('mjashik_npc_show_download_button', 'yes'), 'yes'); ?>><?php esc_html_e('Yes, show below posts', 'news-photo-card'); ?></option>
-                                <option value="no" <?php selected(get_option('mjashik_npc_show_download_button', 'yes'), 'no'); ?>><?php esc_html_e('No, admin only', 'news-photo-card'); ?></option>
+                                <option value="yes" <?php selected(get_option('mjashik_npc_show_download_button', 'yes'), 'yes'); ?>><?php esc_html_e('Yes, show below posts', 'newspaper-social-media-photo-card'); ?></option>
+                                <option value="no" <?php selected(get_option('mjashik_npc_show_download_button', 'yes'), 'no'); ?>><?php esc_html_e('No, admin only', 'newspaper-social-media-photo-card'); ?></option>
                             </select>
-                            <p class="description"><?php esc_html_e('If Yes, site visitors will see the generate button at the bottom of single news posts.', 'news-photo-card'); ?></p>
+                            <p class="description"><?php esc_html_e('If Yes, site visitors will see the generate button at the bottom of single news posts.', 'newspaper-social-media-photo-card'); ?></p>
                         </td>
                     </tr>
                 </table>
@@ -383,13 +418,13 @@ class MJASHIK_NPC_Admin_Settings {
                 
                 <!-- Save Button (Hooks into form via form attribute) -->
                 <button type="submit" form="mjashik_npc_main_form" class="button button-primary">
-                    <?php esc_html_e('Save Changes', 'news-photo-card'); ?>
+                    <?php esc_html_e('Save Changes', 'newspaper-social-media-photo-card'); ?>
                 </button>
                 
                 <!-- Reset Form -->
-                <form method="post" action="<?php echo esc_url(admin_url('admin.php?page=news-photo-card')); ?>" style="margin:0;">
-                    <button type="submit" name="mjashik_npc_reset_settings" value="1" class="button" onclick="return confirm('<?php esc_attr_e('Are you sure you want to reset all settings to their default values? This cannot be undone.', 'news-photo-card'); ?>');">
-                        <?php esc_html_e('Reset to Defaults', 'news-photo-card'); ?>
+                <form method="post" action="<?php echo esc_url(admin_url('admin.php?page=newspaper-social-media-photo-card')); ?>" style="margin:0;">
+                    <button type="submit" name="mjashik_npc_reset_settings" value="1" class="button" onclick="return confirm('<?php esc_attr_e('Are you sure you want to reset all settings to their default values? This cannot be undone.', 'newspaper-social-media-photo-card'); ?>');">
+                        <?php esc_html_e('Reset to Defaults', 'newspaper-social-media-photo-card'); ?>
                     </button>
                     <?php wp_nonce_field('mjashik_npc_reset_action', 'mjashik_npc_reset_nonce'); ?>
                 </form>
@@ -430,8 +465,8 @@ class MJASHIK_NPC_Admin_Settings {
 
             <!-- RIGHT COLUMN: Preview (sticky) -->
             <div style="flex:0 0 420px; position:sticky; top:40px;">
-                <h3 style="margin-top:0; margin-bottom:10px;">📸 <?php esc_html_e('Photo Card Preview', 'news-photo-card'); ?></h3>
-                <p class="description" style="margin-bottom:15px;"><?php esc_html_e('Save changes to refresh.', 'news-photo-card'); ?></p>
+                <h3 style="margin-top:0; margin-bottom:10px;">📸 <?php esc_html_e('Photo Card Preview', 'newspaper-social-media-photo-card'); ?></h3>
+                <p class="description" style="margin-bottom:15px;"><?php esc_html_e('Save changes to refresh.', 'newspaper-social-media-photo-card'); ?></p>
 
             <div style="display:flex; flex-direction:column; gap:20px; align-items:flex-start;">
 
@@ -497,13 +532,13 @@ class MJASHIK_NPC_Admin_Settings {
                     <div style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:8px; padding:20px;">
                         <h3 style="margin-top:0; color:#2c3e50;">📋 Preview Info</h3>
                         <ul style="margin:0; padding-left:18px; color:#555; line-height:2;">
-                            <li><?php esc_html_e('Image expands when title is short', 'news-photo-card'); ?></li>
-                            <li><?php esc_html_e('Image shrinks as title grows', 'news-photo-card'); ?></li>
-                            <li><?php esc_html_e('Footer is always fixed at bottom', 'news-photo-card'); ?></li>
-                            <li><?php esc_html_e('Card size: 800 × 800 px PNG', 'news-photo-card'); ?></li>
+                            <li><?php esc_html_e('Image expands when title is short', 'newspaper-social-media-photo-card'); ?></li>
+                            <li><?php esc_html_e('Image shrinks as title grows', 'newspaper-social-media-photo-card'); ?></li>
+                            <li><?php esc_html_e('Footer is always fixed at bottom', 'newspaper-social-media-photo-card'); ?></li>
+                            <li><?php esc_html_e('Card size: 800 × 800 px PNG', 'newspaper-social-media-photo-card'); ?></li>
                         </ul>
                         <hr>
-                        <p style="margin:0; color:#888; font-size:13px;"><?php esc_html_e('Save changes to refresh the preview.', 'news-photo-card'); ?></p>
+                        <p style="margin:0; color:#888; font-size:13px;"><?php esc_html_e('Save changes to refresh the preview.', 'newspaper-social-media-photo-card'); ?></p>
                     </div>
                 </div>
 

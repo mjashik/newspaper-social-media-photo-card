@@ -2,7 +2,7 @@
 Contributors: mjashik
 Tags: news card, photo card, newspaper photo card, newspaper image generator, newspaper thumbnail, newspaper social media card
 Requires at least: 5.0
-Tested up to: 6.4
+Tested up to: 6.9
 Stable tag: 1.0.0
 Requires PHP: 7.0
 License: GPLv2 or later
