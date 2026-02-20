@@ -50,23 +50,83 @@ jQuery(document).ready(function ($) {
                 return;
             }
 
-            html2canvas(element, {
-                useCORS: true,
-                scale: 2,
-                backgroundColor: null,
-                allowTaint: true,
-                logging: false
+            // --- Convert SVG images to PNG before html2canvas (SVG not supported) ---
+            function convertSvgsToPng(container) {
+                var svgImgs = container.querySelectorAll('img');
+                var promises = [];
+
+                svgImgs.forEach(function (img) {
+                    if (!img.src || !img.src.match(/\.svg/i)) return;
+                    if (!img.complete || img.naturalWidth === 0) return;
+
+                    var promise = new Promise(function (resolve) {
+                        // Use rendered (CSS-constrained) dimensions for exact size match
+                        var renderW = img.offsetWidth || img.naturalWidth;
+                        var renderH = img.offsetHeight || img.naturalHeight;
+                        var scale = 4; // 4x for crisp output (html2canvas also scales 2x)
+                        var canvas = document.createElement('canvas');
+                        canvas.width = renderW * scale;
+                        canvas.height = renderH * scale;
+                        var ctx = canvas.getContext('2d');
+                        ctx.scale(scale, scale);
+                        try {
+                            ctx.drawImage(img, 0, 0, renderW, renderH);
+                            var pngDataUrl = canvas.toDataURL('image/png');
+                            img._originalSrc = img.src;
+                            img._originalW = img.style.width;
+                            img._originalH = img.style.height;
+                            // Set explicit pixel dimensions + PNG src
+                            img.style.width = renderW + 'px';
+                            img.style.height = renderH + 'px';
+                            img.src = pngDataUrl;
+                        } catch (e) {
+                            console.warn('SVG convert failed:', e);
+                        }
+                        setTimeout(resolve, 100);
+                    });
+                    promises.push(promise);
+                });
+
+                return Promise.all(promises);
+            }
+
+            function restoreSvgSrcs(container) {
+                container.querySelectorAll('img').forEach(function (img) {
+                    if (img._originalSrc) {
+                        img.src = img._originalSrc;
+                        img.style.width = img._originalW || '';
+                        img.style.height = img._originalH || '';
+                        delete img._originalSrc;
+                        delete img._originalW;
+                        delete img._originalH;
+                    }
+                });
+            }
+
+            // Convert SVGs first, then capture
+            convertSvgsToPng(element).then(function () {
+                return html2canvas(element, {
+                    useCORS: true,
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    allowTaint: true,
+                    logging: false
+                });
             }).then(function (canvas) {
+                // Restore original SVG srcs
+                restoreSvgSrcs(element);
+
                 // Trigger download
                 var link = document.createElement('a');
-                link.download = 'news-card-' + (mjashikNPC.post_id || 'image') + '.jpg';
-                link.href = canvas.toDataURL("image/jpeg", 0.9);
+                link.download = 'news-card-' + (mjashikNPC.post_id || 'image') + '.png';
+                link.href = canvas.toDataURL("image/png");
                 link.click();
 
                 // Reset UI
                 $loading.hide();
                 $btn.removeClass('disabled').prop('disabled', false).html(originalText);
             }).catch(function (error) {
+                restoreSvgSrcs(element);
                 console.error('Photo Card Gen Error:', error);
                 alert('Error generating card. Check console for details.');
                 $loading.hide();

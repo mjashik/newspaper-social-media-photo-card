@@ -79,94 +79,82 @@ class MJASHIK_NPC_Post_Integration {
         $post_id = $post->ID;
         
         // Settings
-        $logo_url = get_option('mjashik_npc_logo_url');
-        $background_url = get_option('mjashik_npc_background_url'); 
-        $font_color = get_option('mjashik_npc_font_color', '#000000'); 
-        $date_format = get_option('mjashik_npc_date_format', 'd F Y');
-        $website_url = get_option('mjashik_npc_website_url', '');
+        $logo_url       = get_option('mjashik_npc_logo_url');
+        $background_url = get_option('mjashik_npc_background_url');
+        $font_color     = get_option('mjashik_npc_font_color', '#1a1a1a');
+        $title_area_bg  = get_option('mjashik_npc_title_area_bg_color', '#ffffff');
+        $date_bg        = get_option('mjashik_npc_date_bg_color', '#e74c3c');
+        $date_color     = get_option('mjashik_npc_date_text_color', '#ffffff');
+        $footer_bg      = get_option('mjashik_npc_footer_bg_color', '#2c3e50');
+        $footer_color   = get_option('mjashik_npc_footer_text_color', '#ffffff');
+        $date_format    = get_option('mjashik_npc_date_format', 'd F Y');
+        $website_url    = get_option('mjashik_npc_website_url', '');
+        $title_fs       = get_option('mjashik_npc_title_font_size', 42);
         
         $thumbnail_url = get_the_post_thumbnail_url($post_id, 'full');
-        $date = date_i18n($date_format, strtotime($post->post_date));
+        $date  = date_i18n($date_format, strtotime($post->post_date));
         $title = $post->post_title;
-        
-        if ($font_color === '#ffffff') $font_color = '#1a1a1a';
 
-        // Layout Config
-        $card_w = 800;
-        $card_h = 800;
-        $footer_h = 60; // Fixed footer height
-        $image_h = 650; // Image height
-        $text_h = $card_h - $image_h - $footer_h; // Leftover for text (290px)
-
-        // Premium Background Logic with Pattern
-        // Using a subtle geometric pattern if no custom background
-        $css_pattern = "background-color: #ffffff; opacity: 0.8; background-image:  linear-gradient(30deg, #f4f6f8 12%, transparent 12.5%, transparent 87%, #f4f6f8 87.5%, #f4f6f8), linear-gradient(150deg, #f4f6f8 12%, transparent 12.5%, transparent 87%, #f4f6f8 87.5%, #f4f6f8), linear-gradient(30deg, #f4f6f8 12%, transparent 12.5%, transparent 87%, #f4f6f8 87.5%, #f4f6f8), linear-gradient(150deg, #f4f6f8 12%, transparent 12.5%, transparent 87%, #f4f6f8 87.5%, #f4f6f8), linear-gradient(60deg, #f4f6f877 25%, transparent 25.5%, transparent 75%, #f4f6f877 75%, #f4f6f877), linear-gradient(60deg, #f4f6f877 25%, transparent 25.5%, transparent 75%, #f4f6f877 75%, #f4f6f877); background-size: 40px 70px; background-position: 0 0, 0 0, 20px 35px, 20px 35px, 0 0, 20px 35px;";
-        
-        $text_area_bg = $background_url 
-             ? "background-image: url('{$background_url}'); background-size: cover; background-position: center;" 
-             : $css_pattern;
+        // Layout Config — dynamic: image flex-grows, title auto-height, footer fixed
+        $card_w   = 800;
+        $card_h   = 800;
+        $footer_h = 70;
 
         echo "
         <div id='npc-hidden-container' style='position:absolute; left:-9999px; top:-9999px;'>
-            <div id='npc-card-capture' style='width: {$card_w}px; height: {$card_h}px; position: relative; overflow: hidden; font-family: \"Noto Sans Bengali\", sans-serif; background: #fff; display: flex; flex-direction: column;'>
-                
-                <!-- 1. FEATURED IMAGE AREA (TOP) -->
-                <div style='position: relative; width: 100%; height: auto; min-height: 200px; flex: 1 1 auto; overflow: hidden;'>
-                    " . ($thumbnail_url 
-                        ? "<img src='{$thumbnail_url}' style='width: 100%; height: 100%; object-fit: cover; object-position: center top;' crossorigin='anonymous'>" 
-                        : "<div style='width:100%; height:100%; background:#ddd;'></div>") . "
-                    
-                    <!-- Gradient Overlay for Contrast -->
-                    <div style='position: absolute; bottom: 0; left: 0; width: 100%; height: 150px; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);'></div>
+            <div id='npc-card-capture' style='width:{$card_w}px; height:{$card_h}px; position:relative; overflow:hidden; font-family:\"Noto Sans Bengali\",sans-serif; background:#fff; display:flex; flex-direction:column;'>
 
-                    <!-- FLOATING BADGES -->
-                    <!-- Logo (Top Left - Floating) -->
-                    <div style='position: absolute; top: 30px; left: 30px; z-index: 20; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));'>
-                         " . ($logo_url ? "<img src='{$logo_url}' style='max-height: 70px; height: auto; width: auto; max-width: 250px;' crossorigin='anonymous'>" : "") . "
+                <!-- 1. IMAGE AREA — fills remaining space (flex:1), uses CSS background-image for html2canvas -->
+                <div style='position:relative; width:100%; flex:1 1 auto; min-height:200px; overflow:hidden; "
+                    . ($thumbnail_url
+                        ? "background-image:url({$thumbnail_url}); background-size:cover; background-position:center top;"
+                        : "background:linear-gradient(135deg,#dde3ea,#b2bec3);")
+                    . "'>
+
+                    <!-- Gradient Overlay -->
+                    <div style='position:absolute; bottom:0; left:0; width:100%; height:160px; background:linear-gradient(to top,rgba(0,0,0,0.65),transparent); z-index:10;'></div>
+
+                    <!-- Logo (Top Left) -->
+                    <div style='position:absolute; top:28px; left:28px; z-index:30;'>
+                        " . ($logo_url ? "<img src='{$logo_url}' style='height:70px; width:auto; max-width:240px; display:block;' crossorigin='anonymous'>" : "") . "
                     </div>
 
-                    <!-- Date (Top Right - Modern Rounded Badge) -->
-                    <div style='position: absolute; top: 30px; right: 30px; background: #e74c3c; color: #fff; padding: 10px 20px; font-weight: bold; font-size: 18px; border-radius: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 20; border: 2px solid #fff;'>
+                    <!-- Date Badge (Top Right) -->
+                    <div style='position:absolute; top:28px; right:28px; background:{$date_bg}; color:{$date_color}; padding:10px 22px; font-weight:bold; font-size:18px; border-radius:50px; box-shadow:0 4px 12px rgba(0,0,0,0.3); z-index:30; border:2px solid rgba(255,255,255,0.6);'>
                         {$date}
                     </div>
                 </div>
 
-                <!-- 2. TEXT AREA (MIDDLE) - PREMIUM LOOK -->
-                <div style='position: relative; width: 100%; height: auto; border-top: 6px solid #e74c3c; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 40px; text-align: center; flex: 0 0 auto; overflow: hidden;'>
-                    
-                    <!-- Background Layer -->
-                    <div style='position: absolute; top: 0; left: 0; width: 100%; height: 100%; {$text_area_bg} z-index: 0;'></div>
-                    
-                    <!-- Optional: White Overlay for readability if using pattern/image -->
-                    <div style='position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.85); z-index: 1;'></div>
+                <!-- 2. TITLE AREA — auto height, customizable bg & text color -->
+                <div style='position:relative; width:100%; flex:0 0 auto; border-top:5px solid {$date_bg}; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 50px; text-align:center; overflow:hidden; "
+                    . ($background_url
+                        ? "background-image:url({$background_url}); background-size:cover; background-position:center;"
+                        : "background-color:{$title_area_bg};")
+                    . "'>
 
-                    <!-- Watermark Logo (Very faint) -->
-                    <div style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; width: 50%; pointer-events: none; z-index: 2;'>
-                         " . ($logo_url ? "<img src='{$logo_url}' style='width: 100%; height: auto;' crossorigin='anonymous'>" : "") . "
+                    " . ($background_url ? "<!-- Semi-transparent overlay for readability over image -->
+                    <div style='position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.82); z-index:1;'></div>" : "") . "
+                    <!-- Watermark logo -->
+                    <div style='position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:0.05; width:55%; pointer-events:none; z-index:2;'>
+                        " . ($logo_url ? "<img src='{$logo_url}' style='width:100%; height:auto;' crossorigin='anonymous'>" : "") . "
                     </div>
 
-                    <!-- Decorative Quote -->
-                    <div style='position: absolute; top: -20px; left: 20px; font-size: 140px; color: #e74c3c; opacity: 0.05; font-family: serif; line-height: 1; z-index: 2;'>❝</div>
-
-                    <!-- HEADLINE CONTAINER -->
-                    <!-- This container ensures the text pops with a background if needed, or simply centers perfectly -->
-                    <div style='position: relative; z-index: 10; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0;'>
-                        <h1 style='margin: 0; padding: 0; font-size: 42px; line-height: 1.4; font-weight: 700; color: {$font_color}; width: 100%; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 1px rgba(0,0,0,0.1);'>
+                    <!-- Headline -->
+                    <div style='position:relative; z-index:10; width:100%;'>
+                        <h1 style='margin:0; padding:0; font-size:{$title_fs}px; line-height:1.5; font-weight:700; color:{$font_color}; width:100%; text-shadow:0 1px 2px rgba(0,0,0,0.06);'>
                             {$title}
                         </h1>
                     </div>
                 </div>
 
-                <!-- 3. FOOTER URL BAR (BOTTOM) -->
-                <div style='width: 100%; height: {$footer_h}px; background: #2c3e50; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 600; letter-spacing: 1px; flex-shrink: 0; position: relative; overflow: hidden;'>
-                     
-                     <!-- Subtle Accent Line -->
-                     <div style='position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: rgba(0,0,0,0.2);'></div>
-                     
-                     <span style='opacity: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.3);'>{$website_url}</span>
+                <!-- 3. FOOTER — fixed height, customizable bg & text color -->
+                <div style='width:100%; height:{$footer_h}px; background:{$footer_bg}; color:{$footer_color}; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; letter-spacing:1.5px; flex:0 0 {$footer_h}px; position:relative; overflow:hidden;'>
+                    <div style='position:absolute; top:0; left:0; width:100%; height:4px; background:rgba(255,255,255,0.1);'></div>
+                    <span style='text-shadow:0 2px 4px rgba(0,0,0,0.2);'>{$website_url}</span>
                 </div>
 
             </div>
         </div>";
+
     }
 }

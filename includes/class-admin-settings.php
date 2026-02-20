@@ -41,9 +41,24 @@ class MJASHIK_NPC_Admin_Settings {
         // Background setting
         register_setting('mjashik_npc_settings', 'mjashik_npc_background_url');
         
-        // Font color
+        // Title font color
         register_setting('mjashik_npc_settings', 'mjashik_npc_font_color');
         
+        // Title area background color
+        register_setting('mjashik_npc_settings', 'mjashik_npc_title_area_bg_color');
+
+        // Date badge background color
+        register_setting('mjashik_npc_settings', 'mjashik_npc_date_bg_color');
+
+        // Date badge text color
+        register_setting('mjashik_npc_settings', 'mjashik_npc_date_text_color');
+
+        // Footer background color
+        register_setting('mjashik_npc_settings', 'mjashik_npc_footer_bg_color');
+
+        // Footer text color
+        register_setting('mjashik_npc_settings', 'mjashik_npc_footer_text_color');
+
         // Date format
         register_setting('mjashik_npc_settings', 'mjashik_npc_date_format');
         
@@ -142,18 +157,94 @@ class MJASHIK_NPC_Admin_Settings {
                         </td>
                     </tr>
                     
+                    <!-- ============ COLOR SETTINGS ============ -->
                     <tr>
-                        <th scope="row">
-                            <label for="mjashik_npc_font_color"><?php echo esc_html__('Font Color', 'news-photo-card'); ?></label>
+                        <td colspan="2" style="padding: 15px 0 6px;">
+                            <h2 style="margin:0; padding: 8px 12px; background:#2c3e50; color:#fff; border-radius:4px; font-size:14px;">
+                                🎨 <?php esc_html_e('Color Settings', 'news-photo-card'); ?>
+                            </h2>
+                        </td>
+                    </tr>
+
+                    <!-- Title Area Colors -->
+                    <tr>
+                        <th scope="row" style="padding-left:20px;">
+                            <label for="mjashik_npc_font_color"><?php esc_html_e('📝 Title Text Color', 'news-photo-card'); ?></label>
                         </th>
                         <td>
-                            <input type="text" 
-                                   id="mjashik_npc_font_color" 
-                                   name="mjashik_npc_font_color" 
-                                   value="<?php echo esc_attr(get_option('mjashik_npc_font_color', '#ffffff')); ?>" 
+                            <input type="text"
+                                   id="mjashik_npc_font_color"
+                                   name="mjashik_npc_font_color"
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_font_color', '#1a1a1a')); ?>"
                                    class="mjashik-color-picker" />
                         </td>
                     </tr>
+                    <tr>
+                        <th scope="row" style="padding-left:20px;">
+                            <label for="mjashik_npc_title_area_bg_color"><?php esc_html_e('📝 Title Area Background', 'news-photo-card'); ?></label>
+                        </th>
+                        <td>
+                            <input type="text"
+                                   id="mjashik_npc_title_area_bg_color"
+                                   name="mjashik_npc_title_area_bg_color"
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_title_area_bg_color', '#ffffff')); ?>"
+                                   class="mjashik-color-picker" />
+                            <p class="description"><?php esc_html_e('Background color of the title/headline area.', 'news-photo-card'); ?></p>
+                        </td>
+                    </tr>
+
+                    <!-- Date Badge Colors -->
+                    <tr>
+                        <th scope="row" style="padding-left:20px;">
+                            <label for="mjashik_npc_date_bg_color"><?php esc_html_e('📅 Date Badge Background', 'news-photo-card'); ?></label>
+                        </th>
+                        <td>
+                            <input type="text"
+                                   id="mjashik_npc_date_bg_color"
+                                   name="mjashik_npc_date_bg_color"
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_date_bg_color', '#e74c3c')); ?>"
+                                   class="mjashik-color-picker" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="padding-left:20px;">
+                            <label for="mjashik_npc_date_text_color"><?php esc_html_e('📅 Date Badge Text Color', 'news-photo-card'); ?></label>
+                        </th>
+                        <td>
+                            <input type="text"
+                                   id="mjashik_npc_date_text_color"
+                                   name="mjashik_npc_date_text_color"
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_date_text_color', '#ffffff')); ?>"
+                                   class="mjashik-color-picker" />
+                        </td>
+                    </tr>
+
+                    <!-- Footer Colors -->
+                    <tr>
+                        <th scope="row" style="padding-left:20px;">
+                            <label for="mjashik_npc_footer_bg_color"><?php esc_html_e('🌐 Footer Background', 'news-photo-card'); ?></label>
+                        </th>
+                        <td>
+                            <input type="text"
+                                   id="mjashik_npc_footer_bg_color"
+                                   name="mjashik_npc_footer_bg_color"
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_footer_bg_color', '#2c3e50')); ?>"
+                                   class="mjashik-color-picker" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" style="padding-left:20px;">
+                            <label for="mjashik_npc_footer_text_color"><?php esc_html_e('🌐 Footer Text Color', 'news-photo-card'); ?></label>
+                        </th>
+                        <td>
+                            <input type="text"
+                                   id="mjashik_npc_footer_text_color"
+                                   name="mjashik_npc_footer_text_color"
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_footer_text_color', '#ffffff')); ?>"
+                                   class="mjashik-color-picker" />
+                        </td>
+                    </tr>
+
                     
                     <tr>
                         <th scope="row">
@@ -237,7 +328,128 @@ class MJASHIK_NPC_Admin_Settings {
                 
                 <?php submit_button(); ?>
             </form>
-        </div>
+
+            <?php
+            // Current settings for preview
+            $prev_logo         = get_option('mjashik_npc_logo_url');
+            $prev_bg           = get_option('mjashik_npc_background_url');
+            $prev_font_color   = get_option('mjashik_npc_font_color', '#1a1a1a');
+            $prev_title_bg     = get_option('mjashik_npc_title_area_bg_color', '#ffffff');
+            $prev_date_bg      = get_option('mjashik_npc_date_bg_color', '#e74c3c');
+            $prev_date_color   = get_option('mjashik_npc_date_text_color', '#ffffff');
+            $prev_footer_bg    = get_option('mjashik_npc_footer_bg_color', '#2c3e50');
+            $prev_footer_color = get_option('mjashik_npc_footer_text_color', '#ffffff');
+            $prev_title_size   = (int) get_option('mjashik_npc_title_font_size', 42);
+            $prev_date_fmt     = get_option('mjashik_npc_date_format', 'd F Y');
+            $prev_website      = get_option('mjashik_npc_website_url', '');
+
+            // Demo values
+            $demo_title = 'শীতের সকালে ঘন কুয়াশায় ঢেকেছে রাজধানী ঢাকা';
+            $demo_date  = date_i18n($prev_date_fmt, current_time('timestamp'));
+
+            // Scale: render card at 800×800 then CSS-scale to 400×400
+            $scale    = 0.5;
+            $card_w   = 800;
+            $card_h   = 800;
+            $footer_h = 70;
+            $scaled_w = (int)($card_w * $scale);
+            $scaled_h = (int)($card_h * $scale);
+
+            // Title area bg
+            $title_bg_style = $prev_bg
+                ? "background-image:url('" . esc_url($prev_bg) . "'); background-size:cover; background-position:center;"
+                : "background-color:" . esc_attr($prev_title_bg) . ";";
+            ?>
+
+            <hr style="margin:30px 0;">
+            <h2 style="margin-bottom:6px;"><?php esc_html_e('📸 Photo Card Preview', 'news-photo-card'); ?></h2>
+            <p class="description" style="margin-bottom:20px;"><?php esc_html_e('This is how your generated photo card will look. Save changes to refresh the preview.', 'news-photo-card'); ?></p>
+
+            <div style="display:flex; gap:30px; align-items:flex-start; flex-wrap:wrap;">
+
+                <!-- Outer wrapper holds scaled space (400×400) -->
+                <div style="width:<?php echo $scaled_w; ?>px; height:<?php echo $scaled_h; ?>px; flex-shrink:0; position:relative;">
+                    <!-- Scale wrapper (800×800 → 50%) -->
+                    <div style="transform-origin:top left; transform:scale(<?php echo $scale; ?>); width:<?php echo $card_w; ?>px; height:<?php echo $card_h; ?>px; box-shadow:0 8px 40px rgba(0,0,0,0.22); border-radius:6px; overflow:hidden; position:absolute; top:0; left:0;">
+                        <!-- Card: flex column, image grows, title auto, footer fixed -->
+                        <div style="width:<?php echo $card_w; ?>px; height:<?php echo $card_h; ?>px; position:relative; overflow:hidden; font-family:'Noto Sans Bengali',sans-serif; background:#fff; display:flex; flex-direction:column;">
+
+                            <!-- 1. IMAGE AREA — flex:1 fills remaining space -->
+                            <?php
+                                $img_bg_style = $prev_bg
+                                    ? "background-image:url('" . esc_url($prev_bg) . "'); background-size:cover; background-position:center top;"
+                                    : "background:linear-gradient(135deg,#dde3ea 0%,#b2bec3 100%);";
+                            ?>
+                            <div style="position:relative; width:100%; flex:1 1 auto; min-height:200px; overflow:hidden; <?php echo $img_bg_style; ?>">
+
+                                <!-- Gradient overlay — z-index:10 -->
+                                <div style="position:absolute; bottom:0; left:0; width:100%; height:160px; background:linear-gradient(to top,rgba(0,0,0,0.65),transparent); z-index:10;"></div>
+
+                                <!-- Logo — z-index:30, always on top -->
+                                <div style="position:absolute; top:28px; left:28px; z-index:30; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.45));">
+                                    <?php if ($prev_logo): ?>
+                                        <img src="<?php echo esc_url($prev_logo); ?>" style="height:70px; width:auto; max-width:240px; display:block;" />
+                                    <?php else: ?>
+                                        <div style="background:rgba(255,255,255,0.9); color:#2c3e50; padding:8px 18px; font-size:24px; font-weight:700; border-radius:4px;">YOUR LOGO</div>
+                                    <?php endif; ?>
+                                </div>
+
+                                <!-- Date badge — z-index:30 -->
+                                <div style="position:absolute; top:28px; right:28px; background:<?php echo esc_attr($prev_date_bg); ?>; color:<?php echo esc_attr($prev_date_color); ?>; padding:10px 22px; font-weight:bold; font-size:18px; border-radius:50px; box-shadow:0 4px 12px rgba(0,0,0,0.3); z-index:30; border:2px solid rgba(255,255,255,0.5);">
+                                    <?php echo esc_html($demo_date); ?>
+                                </div>
+                            </div>
+
+
+                            <!-- 2. TITLE AREA — flex:0 auto height, custom bg & text color -->
+                            <div style="position:relative; width:100%; flex:0 0 auto; border-top:5px solid <?php echo esc_attr($prev_date_bg); ?>; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 50px; text-align:center; overflow:hidden; <?php echo $title_bg_style; ?>">
+                                <?php if ($prev_bg): ?>
+                                <!-- Overlay for readability over background image -->
+                                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.82); z-index:1;"></div>
+                                <?php endif; ?>
+                                <!-- Watermark logo -->
+                                <?php if ($prev_logo): ?>
+                                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:0.05; width:55%; z-index:2;">
+                                    <img src="<?php echo esc_url($prev_logo); ?>" style="width:100%; height:auto;" />
+                                </div>
+                                <?php endif; ?>
+
+                                <!-- Headline -->
+                                <div style="position:relative; z-index:10; width:100%;">
+                                    <h1 style="margin:0; padding:0; font-size:<?php echo $prev_title_size; ?>px; line-height:1.5; font-weight:700; color:<?php echo esc_attr($prev_font_color); ?>; width:100%; text-shadow:0 1px 2px rgba(0,0,0,0.06);">
+                                        <?php echo esc_html($demo_title); ?>
+                                    </h1>
+                                </div>
+                            </div>
+
+                            <!-- 3. FOOTER — fixed height, custom colors -->
+                            <div style="width:100%; height:<?php echo $footer_h; ?>px; background:<?php echo esc_attr($prev_footer_bg); ?>; color:<?php echo esc_attr($prev_footer_color); ?>; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; letter-spacing:1.5px; flex:0 0 <?php echo $footer_h; ?>px; position:relative; overflow:hidden;">
+                                <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:rgba(255,255,255,0.1);"></div>
+                                <span style="text-shadow:0 2px 4px rgba(0,0,0,0.2);"><?php echo esc_html($prev_website ?: 'www.yourwebsite.com'); ?></span>
+                            </div>
+
+                        </div>
+                    </div><!-- /.scale-wrapper -->
+                </div><!-- /.outer-wrapper -->
+
+                <!-- Info Box -->
+                <div style="max-width:280px; align-self:center;">
+                    <div style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:8px; padding:20px;">
+                        <h3 style="margin-top:0; color:#2c3e50;">📋 Preview Info</h3>
+                        <ul style="margin:0; padding-left:18px; color:#555; line-height:2;">
+                            <li><?php esc_html_e('Image expands when title is short', 'news-photo-card'); ?></li>
+                            <li><?php esc_html_e('Image shrinks as title grows', 'news-photo-card'); ?></li>
+                            <li><?php esc_html_e('Footer is always fixed at bottom', 'news-photo-card'); ?></li>
+                            <li><?php esc_html_e('Card size: 800 × 800 px PNG', 'news-photo-card'); ?></li>
+                        </ul>
+                        <hr>
+                        <p style="margin:0; color:#888; font-size:13px;"><?php esc_html_e('Save changes to refresh the preview.', 'news-photo-card'); ?></p>
+                    </div>
+                </div>
+
+            </div><!-- /.preview-wrap -->
+
+        </div><!-- /.wrap -->
         <?php
     }
 }
