@@ -451,7 +451,7 @@ class MJASHIK_NPC_Admin_Settings {
                                 <!-- Logo (Top Left) -->
                                 <div style="position:absolute; top:28px; left:28px; z-index:30; filter:drop-shadow(0 2px 6px <?php echo esc_attr($prev_logo_shadow); ?>);">
                                     <?php if ($prev_logo): ?>
-                                        <img src="<?php echo esc_url($prev_logo); ?>" style="height:auto; width:auto; max-width:240px; display:block;" crossorigin="anonymous">
+                                        <img id="npc-logo-img" data-shadow="<?php echo esc_attr($prev_logo_shadow); ?>" src="<?php echo esc_url($prev_logo); ?>" style="height:auto; width:auto; max-width:240px; display:block;" crossorigin="anonymous">
                                     <?php else: ?>
                                         <div style="background:rgba(255,255,255,0.9); color:#2c3e50; padding:8px 18px; font-size:24px; font-weight:700; border-radius:4px;">YOUR LOGO</div>
                                     <?php endif; ?>
