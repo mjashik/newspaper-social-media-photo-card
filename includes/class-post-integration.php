@@ -140,6 +140,9 @@ class MJASHIK_NPC_Post_Integration {
         // Settings
         $logo_url       = get_option('mjashik_npc_logo_url');
         $logo_shadow    = get_option('mjashik_npc_logo_shadow_color', '#000000');
+        list($sh_r, $sh_g, $sh_b) = sscanf($logo_shadow, "#%02x%02x%02x");
+        $glow_rgba      = "rgba(" . (int)$sh_r . "," . (int)$sh_g . "," . (int)$sh_b . ", 0.5)";
+        
         $font_color     = get_option('mjashik_npc_font_color', '#ffffff');
         $title_area_bg  = get_option('mjashik_npc_title_area_bg_color', '#AA0001');
         $date_bg        = get_option('mjashik_npc_date_bg_color', '#AA0001');
@@ -174,7 +177,7 @@ class MJASHIK_NPC_Post_Integration {
                     <div style='position:absolute; bottom:0; left:0; width:100%; height:160px; background:linear-gradient(to top,rgba(0,0,0,0.65),transparent); z-index:10;'></div>
 
                     <!-- Logo (Top Left) -->
-                    <div style='position:absolute; top:28px; left:28px; z-index:30; filter:drop-shadow(0 2px 6px " . esc_attr($logo_shadow) . ");'>
+                    <div style='position:absolute; top:20px; left:20px; z-index:30; padding:8px; border-radius:50%; background:radial-gradient(ellipse at center, <?php echo $glow_rgba; ?> 10%, transparent 70%);'>
                         " . ($logo_url ? "<img id='npc-logo-img' data-shadow='" . esc_attr($logo_shadow) . "' src='" . esc_url($logo_url) . "' style='height:auto; width:auto; max-width:240px; display:block;' crossorigin='anonymous'>" : "") . "
                     </div>
 
