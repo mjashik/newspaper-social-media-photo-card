@@ -102,8 +102,85 @@ jQuery(document).ready(function ($) {
                     }
                 });
             }
-            // Convert SVGs first, then capture
+
+            function bakeLogoShadow(container) {
+                var logoImg = container.querySelector('#npc-logo-img');
+                if (!logoImg || !logoImg.src) return Promise.resolve();
+                if (!logoImg.complete || logoImg.naturalWidth === 0) return Promise.resolve();
+
+                return new Promise(function (resolve) {
+                    var shadowColor = logoImg.getAttribute('data-shadow');
+                    if (!shadowColor || shadowColor === 'none' || shadowColor === '') return resolve();
+
+                    var renderW = logoImg.offsetWidth || logoImg.naturalWidth;
+                    var renderH = logoImg.offsetHeight || logoImg.naturalHeight;
+
+                    var scale = 4;
+                    var dropY = 2;
+                    var dropBlur = 6;
+                    var pad = 15; // fixed pixel padding for shadow 
+
+                    var canvas = document.createElement('canvas');
+                    canvas.width = (renderW + pad * 2) * scale;
+                    canvas.height = (renderH + pad * 2) * scale;
+                    var ctx = canvas.getContext('2d');
+
+                    ctx.scale(scale, scale);
+                    ctx.shadowColor = shadowColor;
+                    ctx.shadowBlur = dropBlur;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = dropY;
+
+                    try {
+                        ctx.drawImage(logoImg, pad, pad, renderW, renderH);
+
+                        var pngDataUrl = canvas.toDataURL('image/png');
+
+                        logoImg._shadowOriginalSrc = logoImg.src;
+                        logoImg._shadowOriginalW = logoImg.style.width;
+                        logoImg._shadowOriginalH = logoImg.style.height;
+                        logoImg._shadowOriginalMargin = logoImg.style.margin;
+                        logoImg._shadowOriginalMaxWidth = logoImg.style.maxWidth;
+
+                        logoImg.style.maxWidth = 'none';
+                        logoImg.style.width = (renderW + pad * 2) + 'px';
+                        logoImg.style.height = (renderH + pad * 2) + 'px';
+                        logoImg.style.margin = '-' + pad + 'px 0 0 -' + pad + 'px';
+                        logoImg.src = pngDataUrl;
+
+                    } catch (e) {
+                        console.warn('Logo shadow bake failed:', e);
+                    }
+                    setTimeout(resolve, 100);
+                });
+            }
+
+            function restoreLogoShadow(container) {
+                var logoImg = container.querySelector('#npc-logo-img');
+                if (logoImg && logoImg._shadowOriginalSrc) {
+                    logoImg.src = logoImg._shadowOriginalSrc;
+                    logoImg.style.width = logoImg._shadowOriginalW || '';
+                    logoImg.style.height = logoImg._shadowOriginalH || '';
+                    if (typeof logoImg._shadowOriginalMaxWidth !== 'undefined') {
+                        logoImg.style.maxWidth = logoImg._shadowOriginalMaxWidth;
+                    }
+                    if (logoImg._shadowOriginalMargin) {
+                        logoImg.style.margin = logoImg._shadowOriginalMargin;
+                    } else {
+                        logoImg.style.removeProperty('margin');
+                    }
+                    delete logoImg._shadowOriginalSrc;
+                    delete logoImg._shadowOriginalW;
+                    delete logoImg._shadowOriginalH;
+                    delete logoImg._shadowOriginalMargin;
+                    delete logoImg._shadowOriginalMaxWidth;
+                }
+            }
+
+            // Convert SVGs first, bake shadow, then capture
             convertSvgsToPng(element).then(function () {
+                return bakeLogoShadow(element);
+            }).then(function () {
                 return html2canvas(element, {
                     useCORS: true,
                     scale: 2,
@@ -112,7 +189,8 @@ jQuery(document).ready(function ($) {
                     logging: false
                 });
             }).then(function (canvas) {
-                // Restore original SVG srcs
+                // Restore original setups
+                restoreLogoShadow(element);
                 restoreSvgSrcs(element);
 
                 // Trigger download
@@ -125,6 +203,7 @@ jQuery(document).ready(function ($) {
                 $loading.hide();
                 $btn.removeClass('disabled').prop('disabled', false).html(originalText);
             }).catch(function (error) {
+                restoreLogoShadow(element);
                 restoreSvgSrcs(element);
                 console.error('Photo Card Gen Error:', error);
                 alert('Error generating card. Check console for details.');
