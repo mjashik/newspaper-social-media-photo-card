@@ -175,7 +175,7 @@ class MJASHIK_NPC_Post_Integration {
 
                     <!-- Logo (Top Left) -->
                     <div style='position:absolute; top:28px; left:28px; z-index:30; filter:drop-shadow(0 2px 6px " . esc_attr($logo_shadow) . ");'>
-                        " . ($logo_url ? "<img src='" . esc_url($logo_url) . "' style='height:auto; width:auto; max-width:240px; display:block;' crossorigin='anonymous'>" : "") . "
+                        " . ($logo_url ? "<img id='npc-logo-img' data-shadow='" . esc_attr($logo_shadow) . "' src='" . esc_url($logo_url) . "' style='height:auto; width:auto; max-width:240px; display:block;' crossorigin='anonymous'>" : "") . "
                     </div>
 
                     <!-- Date Badge (Top Right) -->
