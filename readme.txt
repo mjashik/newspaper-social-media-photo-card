@@ -1,6 +1,6 @@
 === Newspaper Social Media Photo Card ===
 Contributors: mjashik
-Tags: news card, photo card, social media card, image generator, thumbnail
+Tags: news card, photo card, newspaper photo card, newspaper image generator, newspaper thumbnail, newspaper social media card
 Requires at least: 5.0
 Tested up to: 6.4
 Stable tag: 1.0.0
@@ -25,7 +25,7 @@ Newspaper Social Media Photo Card allows you to easily generate beautiful, high-
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/news-photo-card` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/newspaper-social-media-photo-card` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to `Settings -> Photo Card` to upload your logo and customize the colors, backgrounds, and fonts.
 4. Go to any Post edit screen. Below the title, you will see a "Download Photo Card" button.

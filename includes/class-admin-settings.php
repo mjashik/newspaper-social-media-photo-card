@@ -338,17 +338,14 @@ class MJASHIK_NPC_Admin_Settings {
                     
                     <tr>
                         <th scope="row">
-                            <label for="mjashik_npc_show_download_button"><?php echo esc_html__('Show Download Button', 'news-photo-card'); ?></label>
+                            <label for="mjashik_npc_show_download_button"><?php echo esc_html__('Show Download Button (Frontend)', 'news-photo-card'); ?></label>
                         </th>
                         <td>
-                            <label>
-                                <input type="checkbox" 
-                                       id="mjashik_npc_show_download_button" 
-                                       name="mjashik_npc_show_download_button" 
-                                       value="yes" 
-                                       <?php checked(get_option('mjashik_npc_show_download_button', 'yes'), 'yes'); ?> />
-                                <?php echo esc_html__('Display download button on posts', 'news-photo-card'); ?>
-                            </label>
+                            <select id="mjashik_npc_show_download_button" name="mjashik_npc_show_download_button">
+                                <option value="yes" <?php selected(get_option('mjashik_npc_show_download_button', 'yes'), 'yes'); ?>><?php esc_html_e('Yes, show below posts', 'news-photo-card'); ?></option>
+                                <option value="no" <?php selected(get_option('mjashik_npc_show_download_button', 'yes'), 'no'); ?>><?php esc_html_e('No, admin only', 'news-photo-card'); ?></option>
+                            </select>
+                            <p class="description"><?php esc_html_e('If Yes, site visitors will see the generate button at the bottom of single news posts.', 'news-photo-card'); ?></p>
                         </td>
                     </tr>
                 </table>
@@ -417,7 +414,7 @@ class MJASHIK_NPC_Admin_Settings {
                                 <!-- Logo — z-index:30, always on top -->
                                 <div style="position:absolute; top:28px; left:28px; z-index:30; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.45));">
                                     <?php if ($prev_logo): ?>
-                                        <img src="<?php echo esc_url($prev_logo); ?>" style="height:70px; width:auto; max-width:240px; display:block;" />
+                                        <img src="<?php echo esc_url($prev_logo); ?>" style="height:auto; width:auto; max-width:240px; display:block;" />
                                     <?php else: ?>
                                         <div style="background:rgba(255,255,255,0.9); color:#2c3e50; padding:8px 18px; font-size:24px; font-weight:700; border-radius:4px;">YOUR LOGO</div>
                                     <?php endif; ?>
