@@ -13,6 +13,7 @@ class MJASHIK_NPC_Admin_Settings {
     public function __construct() {
         add_action('admin_menu', array($this, 'mjashik_add_admin_menu'));
         add_action('admin_init', array($this, 'mjashik_register_settings'));
+        add_action('admin_init', array($this, 'mjashik_process_settings_reset'));
         add_action('admin_enqueue_scripts', array($this, 'mjashik_enqueue_admin_scripts'));
     }
     
@@ -73,6 +74,38 @@ class MJASHIK_NPC_Admin_Settings {
         
         // Watermark opacity
         register_setting('mjashik_npc_settings', 'mjashik_npc_watermark_opacity');
+    }
+    
+    /**
+     * Process reset to defaults
+     */
+    public function mjashik_process_settings_reset() {
+        if (isset($_POST['mjashik_npc_reset_settings']) && isset($_POST['mjashik_npc_reset_nonce'])) {
+            if (!wp_verify_nonce($_POST['mjashik_npc_reset_nonce'], 'mjashik_npc_reset_action')) {
+                wp_die(__('Security check failed', 'news-photo-card'));
+            }
+            
+            if (!current_user_can('manage_options')) {
+                wp_die(__('You do not have permission', 'news-photo-card'));
+            }
+            
+            // Delete all plugin options
+            delete_option('mjashik_npc_logo_url');
+            delete_option('mjashik_npc_font_color');
+            delete_option('mjashik_npc_title_area_bg_color');
+            delete_option('mjashik_npc_date_bg_color');
+            delete_option('mjashik_npc_date_text_color');
+            delete_option('mjashik_npc_footer_bg_color');
+            delete_option('mjashik_npc_footer_text_color');
+            delete_option('mjashik_npc_date_format');
+            delete_option('mjashik_npc_show_download_button');
+            delete_option('mjashik_npc_title_font_size');
+            delete_option('mjashik_npc_date_font_size');
+            delete_option('mjashik_npc_website_url');
+            delete_option('mjashik_npc_watermark_opacity');
+            
+            add_settings_error('mjashik_npc_messages', 'mjashik_npc_message', __('Settings restored to default values', 'news-photo-card'), 'updated');
+        }
     }
     
     /**
@@ -326,7 +359,14 @@ class MJASHIK_NPC_Admin_Settings {
                     </tr>
                 </table>
                 
-                <?php submit_button(); ?>
+                <div style="display:flex; align-items:center; gap:15px; margin-top:20px;">
+                    <?php submit_button('', 'primary', 'submit', false); ?>
+                    
+                    <button type="submit" name="mjashik_npc_reset_settings" value="1" class="button" onclick="return confirm('<?php esc_attr_e('Are you sure you want to reset all settings to their default values? This cannot be undone.', 'news-photo-card'); ?>');">
+                        <?php esc_html_e('Reset to Defaults', 'news-photo-card'); ?>
+                    </button>
+                    <?php wp_nonce_field('mjashik_npc_reset_action', 'mjashik_npc_reset_nonce'); ?>
+                </div>
             </form>
             </div><!-- /LEFT COLUMN -->
 
@@ -356,9 +396,7 @@ class MJASHIK_NPC_Admin_Settings {
             $scaled_h = (int)($card_h * $scale);
 
             // Title area bg
-            $title_bg_style = $prev_bg
-                ? "background-image:url('" . esc_url($prev_bg) . "'); background-size:cover; background-position:center;"
-                : "background-color:" . esc_attr($prev_title_bg) . ";";
+            $title_bg_style = "background-color:" . esc_attr($prev_title_bg) . ";";
             ?>
 
             <!-- RIGHT COLUMN: Preview (sticky) -->
