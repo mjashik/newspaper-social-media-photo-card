@@ -89,8 +89,7 @@ class MJASHIK_NPC_Admin_Settings {
                 wp_die(__('You do not have permission', 'news-photo-card'));
             }
             
-            // Delete all plugin options
-            delete_option('mjashik_npc_logo_url');
+            // Delete all plugin options EXECPT the logo
             delete_option('mjashik_npc_font_color');
             delete_option('mjashik_npc_title_area_bg_color');
             delete_option('mjashik_npc_date_bg_color');
