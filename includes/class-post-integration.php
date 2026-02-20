@@ -139,14 +139,14 @@ class MJASHIK_NPC_Post_Integration {
         
         // Settings
         $logo_url       = get_option('mjashik_npc_logo_url');
-        $font_color     = get_option('mjashik_npc_font_color', '#1a1a1a');
+        $font_color     = get_option('mjashik_npc_font_color', '#ffffff');
         $title_area_bg  = get_option('mjashik_npc_title_area_bg_color', '#AA0001');
         $date_bg        = get_option('mjashik_npc_date_bg_color', '#AA0001');
         $date_color     = get_option('mjashik_npc_date_text_color', '#ffffff');
         $footer_bg      = get_option('mjashik_npc_footer_bg_color', '#AA0001');
         $footer_color   = get_option('mjashik_npc_footer_text_color', '#ffffff');
         $date_format    = get_option('mjashik_npc_date_format', 'd F Y');
-        $website_url    = get_option('mjashik_npc_website_url', '');
+        $website_url    = get_option('mjashik_npc_website_url', 'www.hostbuybd.com');
         $title_fs       = get_option('mjashik_npc_title_font_size', 42);
         
         $thumbnail_url = get_the_post_thumbnail_url($post_id, 'full');

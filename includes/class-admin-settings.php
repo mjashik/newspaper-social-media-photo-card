@@ -191,7 +191,7 @@ class MJASHIK_NPC_Admin_Settings {
                             <input type="color"
                                    id="mjashik_npc_font_color"
                                    name="mjashik_npc_font_color"
-                                   value="<?php echo esc_attr(get_option('mjashik_npc_font_color', '#1a1a1a')); ?>"
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_font_color', '#ffffff')); ?>"
                                    style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
                         </td>
                     </tr>
@@ -203,7 +203,7 @@ class MJASHIK_NPC_Admin_Settings {
                             <input type="color"
                                    id="mjashik_npc_title_area_bg_color"
                                    name="mjashik_npc_title_area_bg_color"
-                                   value="<?php echo esc_attr(get_option('mjashik_npc_title_area_bg_color', '#ffffff')); ?>"
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_title_area_bg_color', '#AA0001')); ?>"
                                    style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
                             <p class="description"><?php esc_html_e('Background color of the title/headline area.', 'news-photo-card'); ?></p>
                         </td>
@@ -218,7 +218,7 @@ class MJASHIK_NPC_Admin_Settings {
                             <input type="color"
                                    id="mjashik_npc_date_bg_color"
                                    name="mjashik_npc_date_bg_color"
-                                   value="<?php echo esc_attr(get_option('mjashik_npc_date_bg_color', '#e74c3c')); ?>"
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_date_bg_color', '#AA0001')); ?>"
                                    style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
                         </td>
                     </tr>
@@ -244,7 +244,7 @@ class MJASHIK_NPC_Admin_Settings {
                             <input type="color"
                                    id="mjashik_npc_footer_bg_color"
                                    name="mjashik_npc_footer_bg_color"
-                                   value="<?php echo esc_attr(get_option('mjashik_npc_footer_bg_color', '#2c3e50')); ?>"
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_footer_bg_color', '#AA0001')); ?>"
                                    style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
                         </td>
                     </tr>
@@ -335,7 +335,7 @@ class MJASHIK_NPC_Admin_Settings {
                             <input type="text" 
                                    id="mjashik_npc_website_url" 
                                    name="mjashik_npc_website_url" 
-                                   value="<?php echo esc_attr(get_option('mjashik_npc_website_url', '')); ?>" 
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_website_url', 'www.hostbuybd.com')); ?>" 
                                    class="regular-text" 
                                    placeholder="www.yourwebsite.com" />
                             <p class="description">
@@ -382,7 +382,7 @@ class MJASHIK_NPC_Admin_Settings {
             <?php
             // Current settings for preview
             $prev_logo         = get_option('mjashik_npc_logo_url');
-            $prev_font_color   = get_option('mjashik_npc_font_color', '#1a1a1a');
+            $prev_font_color   = get_option('mjashik_npc_font_color', '#ffffffff');
             $prev_title_bg     = get_option('mjashik_npc_title_area_bg_color', '#AA0001');
             $prev_date_bg      = get_option('mjashik_npc_date_bg_color', '#AA0001');
             $prev_date_color   = get_option('mjashik_npc_date_text_color', '#ffffff');
@@ -390,7 +390,7 @@ class MJASHIK_NPC_Admin_Settings {
             $prev_footer_color = get_option('mjashik_npc_footer_text_color', '#ffffff');
             $prev_title_size   = (int) get_option('mjashik_npc_title_font_size', 42);
             $prev_date_fmt     = get_option('mjashik_npc_date_format', 'd F Y');
-            $prev_website      = get_option('mjashik_npc_website_url', '');
+            $prev_website      = get_option('mjashik_npc_website_url', 'www.hostbuybd.com');
 
             // Demo values
             $demo_title = 'সুপার ফাস্ট নিউজপেপার হোস্টিং কিনুন HOSTBUY.BD থেকে';
