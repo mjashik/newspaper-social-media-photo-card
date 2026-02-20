@@ -42,6 +42,9 @@ class MJASHIK_NPC_Admin_Settings {
         // Title font color
         register_setting('mjashik_npc_settings', 'mjashik_npc_font_color');
         
+        // Logo shadow color
+        register_setting('mjashik_npc_settings', 'mjashik_npc_logo_shadow_color');
+        
         // Title area background color
         register_setting('mjashik_npc_settings', 'mjashik_npc_title_area_bg_color');
 
@@ -90,6 +93,7 @@ class MJASHIK_NPC_Admin_Settings {
             }
             
             // Delete all plugin options EXECPT the logo
+            delete_option('mjashik_npc_logo_shadow_color');
             delete_option('mjashik_npc_font_color');
             delete_option('mjashik_npc_title_area_bg_color');
             delete_option('mjashik_npc_date_bg_color');
@@ -179,6 +183,21 @@ class MJASHIK_NPC_Admin_Settings {
                             <h2 style="margin:0; padding: 8px 12px; background:#2c3e50; color:#fff; border-radius:4px; font-size:14px;">
                                 🎨 <?php esc_html_e('Color Settings', 'news-photo-card'); ?>
                             </h2>
+                        </td>
+                    </tr>
+
+                    <!-- Logo Shadow Color -->
+                    <tr>
+                        <th scope="row" style="padding-left:20px;">
+                            <label for="mjashik_npc_logo_shadow_color"><?php esc_html_e('🖼️ Logo Shadow Color', 'news-photo-card'); ?></label>
+                        </th>
+                        <td>
+                            <input type="color"
+                                   id="mjashik_npc_logo_shadow_color"
+                                   name="mjashik_npc_logo_shadow_color"
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_logo_shadow_color', '#000000')); ?>"
+                                   style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
+                            <p class="description"><?php esc_html_e('Adds a faint drop shadow behind the logo (helps visibility on light backgrounds).', 'news-photo-card'); ?></p>
                         </td>
                     </tr>
 
@@ -382,7 +401,8 @@ class MJASHIK_NPC_Admin_Settings {
             <?php
             // Current settings for preview
             $prev_logo         = get_option('mjashik_npc_logo_url');
-            $prev_font_color   = get_option('mjashik_npc_font_color', '#ffffffff');
+            $prev_logo_shadow  = get_option('mjashik_npc_logo_shadow_color', '#000000');
+            $prev_font_color   = get_option('mjashik_npc_font_color', '#ffffff');
             $prev_title_bg     = get_option('mjashik_npc_title_area_bg_color', '#AA0001');
             $prev_date_bg      = get_option('mjashik_npc_date_bg_color', '#AA0001');
             $prev_date_color   = get_option('mjashik_npc_date_text_color', '#ffffff');
@@ -428,10 +448,10 @@ class MJASHIK_NPC_Admin_Settings {
                                 <!-- Gradient overlay — z-index:10 -->
                                 <div style="position:absolute; bottom:0; left:0; width:100%; height:160px; background:linear-gradient(to top,rgba(0,0,0,0.65),transparent); z-index:10;"></div>
 
-                                <!-- Logo — z-index:30, always on top -->
-                                <div style="position:absolute; top:28px; left:28px; z-index:30; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.45));">
+                                <!-- Logo (Top Left) -->
+                                <div style="position:absolute; top:28px; left:28px; z-index:30; filter:drop-shadow(0 2px 6px <?php echo esc_attr($prev_logo_shadow); ?>);">
                                     <?php if ($prev_logo): ?>
-                                        <img src="<?php echo esc_url($prev_logo); ?>" style="height:auto; width:auto; max-width:240px; display:block;" />
+                                        <img src="<?php echo esc_url($prev_logo); ?>" style="height:auto; width:auto; max-width:240px; display:block;" crossorigin="anonymous">
                                     <?php else: ?>
                                         <div style="background:rgba(255,255,255,0.9); color:#2c3e50; padding:8px 18px; font-size:24px; font-weight:700; border-radius:4px;">YOUR LOGO</div>
                                     <?php endif; ?>
