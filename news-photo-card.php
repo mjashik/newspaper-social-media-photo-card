@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: News Photo Card Generator
- * Plugin URI: https://yoursite.com
+ * Plugin Name: Newspaper Social Media Photo Card
+ * Plugin URI: https://mjashik.com
  * Description: Generate beautiful photo cards for news posts with logo, date, title, and background image
  * Version: 1.0.0
- * Author: Your Name
- * Author URI: https://yoursite.com
+ * Author: mjashik
+ * Author URI: https://mjashik.com
  * Text Domain: news-photo-card
  * Domain Path: /languages
  */
@@ -22,7 +22,6 @@ define('MJASHIK_NPC_PLUGIN_URL', plugin_dir_url(__FILE__));
 
 // Include required files
 require_once MJASHIK_NPC_PLUGIN_DIR . 'includes/class-admin-settings.php';
-require_once MJASHIK_NPC_PLUGIN_DIR . 'includes/class-image-generator.php';
 require_once MJASHIK_NPC_PLUGIN_DIR . 'includes/class-post-integration.php';
 
 /**

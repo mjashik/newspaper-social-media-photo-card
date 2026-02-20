@@ -107,7 +107,7 @@ class MJASHIK_NPC_Post_Integration {
                 <!-- 1. IMAGE AREA — fills remaining space (flex:1), uses CSS background-image for html2canvas -->
                 <div style='position:relative; width:100%; flex:1 1 auto; min-height:200px; overflow:hidden; "
                     . ($thumbnail_url
-                        ? "background-image:url({$thumbnail_url}); background-size:cover; background-position:center top;"
+                        ? "background-image:url(" . esc_url($thumbnail_url) . "); background-size:cover; background-position:center top;"
                         : "background:linear-gradient(135deg,#dde3ea,#b2bec3);")
                     . "'>
 
@@ -116,41 +116,41 @@ class MJASHIK_NPC_Post_Integration {
 
                     <!-- Logo (Top Left) -->
                     <div style='position:absolute; top:28px; left:28px; z-index:30;'>
-                        " . ($logo_url ? "<img src='{$logo_url}' style='height:70px; width:auto; max-width:240px; display:block;' crossorigin='anonymous'>" : "") . "
+                        " . ($logo_url ? "<img src='" . esc_url($logo_url) . "' style='height:70px; width:auto; max-width:240px; display:block;' crossorigin='anonymous'>" : "") . "
                     </div>
 
                     <!-- Date Badge (Top Right) -->
-                    <div style='position:absolute; top:28px; right:28px; background:{$date_bg}; color:{$date_color}; padding:10px 22px; font-weight:bold; font-size:18px; border-radius:50px; box-shadow:0 4px 12px rgba(0,0,0,0.3); z-index:30; border:2px solid rgba(255,255,255,0.6);'>
-                        {$date}
+                    <div style='position:absolute; top:28px; right:28px; background:" . esc_attr($date_bg) . "; color:" . esc_attr($date_color) . "; padding:10px 22px; font-weight:bold; font-size:18px; border-radius:50px; box-shadow:0 4px 12px rgba(0,0,0,0.3); z-index:30; border:2px solid rgba(255,255,255,0.6);'>
+                        " . esc_html($date) . "
                     </div>
                 </div>
 
                 <!-- 2. TITLE AREA — auto height, customizable bg & text color -->
-                <div style='position:relative; width:100%; flex:0 0 auto; border-top:5px solid {$date_bg}; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 50px; text-align:center; overflow:hidden; "
+                <div style='position:relative; width:100%; flex:0 0 auto; border-top:5px solid " . esc_attr($date_bg) . "; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 50px; text-align:center; overflow:hidden; "
                     . ($background_url
-                        ? "background-image:url({$background_url}); background-size:cover; background-position:center;"
-                        : "background-color:{$title_area_bg};")
+                        ? "background-image:url(" . esc_url($background_url) . "); background-size:cover; background-position:center;"
+                        : "background-color:" . esc_attr($title_area_bg) . ";")
                     . "'>
 
                     " . ($background_url ? "<!-- Semi-transparent overlay for readability over image -->
                     <div style='position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.82); z-index:1;'></div>" : "") . "
                     <!-- Watermark logo -->
-                    <div style='position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:" . (((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100) . "; width:55%; pointer-events:none; z-index:2;'>
-                        " . ($logo_url ? "<img src='{$logo_url}' style='width:100%; height:auto;' crossorigin='anonymous'>" : "") . "
+                    <div style='position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:" . esc_attr(((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100) . "; width:55%; pointer-events:none; z-index:2;'>
+                        " . ($logo_url ? "<img src='" . esc_url($logo_url) . "' style='width:100%; height:auto;' crossorigin='anonymous'>" : "") . "
                     </div>
 
                     <!-- Headline -->
                     <div style='position:relative; z-index:10; width:100%;'>
-                        <h1 style='margin:0; padding:0; font-size:{$title_fs}px; line-height:1.5; font-weight:700; color:{$font_color}; width:100%; text-shadow:0 1px 2px rgba(0,0,0,0.06);'>
-                            {$title}
+                        <h1 style='margin:0; padding:0; font-size:" . esc_attr($title_fs) . "px; line-height:1.5; font-weight:700; color:" . esc_attr($font_color) . "; width:100%; text-shadow:0 1px 2px rgba(0,0,0,0.06);'>
+                            " . esc_html($title) . "
                         </h1>
                     </div>
                 </div>
 
                 <!-- 3. FOOTER — fixed height, customizable bg & text color -->
-                <div style='width:100%; height:{$footer_h}px; background:{$footer_bg}; color:{$footer_color}; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; letter-spacing:1.5px; flex:0 0 {$footer_h}px; position:relative; overflow:hidden;'>
+                <div style='width:100%; height:{$footer_h}px; background:" . esc_attr($footer_bg) . "; color:" . esc_attr($footer_color) . "; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; letter-spacing:1.5px; flex:0 0 {$footer_h}px; position:relative; overflow:hidden;'>
                     <div style='position:absolute; top:0; left:0; width:100%; height:4px; background:rgba(255,255,255,0.1);'></div>
-                    <span style='text-shadow:0 2px 4px rgba(0,0,0,0.2);'>{$website_url}</span>
+                    <span style='text-shadow:0 2px 4px rgba(0,0,0,0.2);'>" . esc_url($website_url) . "</span>
                 </div>
 
             </div>
