@@ -135,7 +135,7 @@ class MJASHIK_NPC_Post_Integration {
                     " . ($background_url ? "<!-- Semi-transparent overlay for readability over image -->
                     <div style='position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.82); z-index:1;'></div>" : "") . "
                     <!-- Watermark logo -->
-                    <div style='position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:0.05; width:55%; pointer-events:none; z-index:2;'>
+                    <div style='position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:" . (((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100) . "; width:55%; pointer-events:none; z-index:2;'>
                         " . ($logo_url ? "<img src='{$logo_url}' style='width:100%; height:auto;' crossorigin='anonymous'>" : "") . "
                     </div>
 

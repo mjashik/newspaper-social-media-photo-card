@@ -73,6 +73,9 @@ class MJASHIK_NPC_Admin_Settings {
         
         // Website URL
         register_setting('mjashik_npc_settings', 'mjashik_npc_website_url');
+        
+        // Watermark opacity
+        register_setting('mjashik_npc_settings', 'mjashik_npc_watermark_opacity');
     }
     
     /**
@@ -110,7 +113,12 @@ class MJASHIK_NPC_Admin_Settings {
         ?>
         <div class="wrap">
             <h1><?php echo esc_html__('News Photo Card Settings', 'news-photo-card'); ?></h1>
-            
+
+            <!-- Two-column layout: Settings Left, Preview Right -->
+            <div style="display:flex; gap:30px; align-items:flex-start; margin-top:15px;">
+
+            <!-- LEFT COLUMN: Settings Form -->
+            <div style="flex:1 1 0; min-width:400px;">
             <form method="post" action="options.php">
                 <?php settings_fields('mjashik_npc_settings'); ?>
                 
@@ -172,11 +180,11 @@ class MJASHIK_NPC_Admin_Settings {
                             <label for="mjashik_npc_font_color"><?php esc_html_e('📝 Title Text Color', 'news-photo-card'); ?></label>
                         </th>
                         <td>
-                            <input type="text"
+                            <input type="color"
                                    id="mjashik_npc_font_color"
                                    name="mjashik_npc_font_color"
                                    value="<?php echo esc_attr(get_option('mjashik_npc_font_color', '#1a1a1a')); ?>"
-                                   class="mjashik-color-picker" />
+                                   style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
                         </td>
                     </tr>
                     <tr>
@@ -184,11 +192,11 @@ class MJASHIK_NPC_Admin_Settings {
                             <label for="mjashik_npc_title_area_bg_color"><?php esc_html_e('📝 Title Area Background', 'news-photo-card'); ?></label>
                         </th>
                         <td>
-                            <input type="text"
+                            <input type="color"
                                    id="mjashik_npc_title_area_bg_color"
                                    name="mjashik_npc_title_area_bg_color"
                                    value="<?php echo esc_attr(get_option('mjashik_npc_title_area_bg_color', '#ffffff')); ?>"
-                                   class="mjashik-color-picker" />
+                                   style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
                             <p class="description"><?php esc_html_e('Background color of the title/headline area.', 'news-photo-card'); ?></p>
                         </td>
                     </tr>
@@ -199,11 +207,11 @@ class MJASHIK_NPC_Admin_Settings {
                             <label for="mjashik_npc_date_bg_color"><?php esc_html_e('📅 Date Badge Background', 'news-photo-card'); ?></label>
                         </th>
                         <td>
-                            <input type="text"
+                            <input type="color"
                                    id="mjashik_npc_date_bg_color"
                                    name="mjashik_npc_date_bg_color"
                                    value="<?php echo esc_attr(get_option('mjashik_npc_date_bg_color', '#e74c3c')); ?>"
-                                   class="mjashik-color-picker" />
+                                   style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
                         </td>
                     </tr>
                     <tr>
@@ -211,11 +219,11 @@ class MJASHIK_NPC_Admin_Settings {
                             <label for="mjashik_npc_date_text_color"><?php esc_html_e('📅 Date Badge Text Color', 'news-photo-card'); ?></label>
                         </th>
                         <td>
-                            <input type="text"
+                            <input type="color"
                                    id="mjashik_npc_date_text_color"
                                    name="mjashik_npc_date_text_color"
                                    value="<?php echo esc_attr(get_option('mjashik_npc_date_text_color', '#ffffff')); ?>"
-                                   class="mjashik-color-picker" />
+                                   style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
                         </td>
                     </tr>
 
@@ -225,11 +233,11 @@ class MJASHIK_NPC_Admin_Settings {
                             <label for="mjashik_npc_footer_bg_color"><?php esc_html_e('🌐 Footer Background', 'news-photo-card'); ?></label>
                         </th>
                         <td>
-                            <input type="text"
+                            <input type="color"
                                    id="mjashik_npc_footer_bg_color"
                                    name="mjashik_npc_footer_bg_color"
                                    value="<?php echo esc_attr(get_option('mjashik_npc_footer_bg_color', '#2c3e50')); ?>"
-                                   class="mjashik-color-picker" />
+                                   style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
                         </td>
                     </tr>
                     <tr>
@@ -237,11 +245,30 @@ class MJASHIK_NPC_Admin_Settings {
                             <label for="mjashik_npc_footer_text_color"><?php esc_html_e('🌐 Footer Text Color', 'news-photo-card'); ?></label>
                         </th>
                         <td>
-                            <input type="text"
+                            <input type="color"
                                    id="mjashik_npc_footer_text_color"
                                    name="mjashik_npc_footer_text_color"
                                    value="<?php echo esc_attr(get_option('mjashik_npc_footer_text_color', '#ffffff')); ?>"
-                                   class="mjashik-color-picker" />
+                                   style="width:60px; height:36px; padding:2px; cursor:pointer; border:1px solid #ccc; border-radius:4px;" />
+                        </td>
+                    </tr>
+
+                    <!-- Watermark Opacity -->
+                    <tr>
+                        <th scope="row" style="padding-left:20px;">
+                            <label for="mjashik_npc_watermark_opacity"><?php esc_html_e('🔍 Watermark Opacity', 'news-photo-card'); ?></label>
+                        </th>
+                        <td>
+                            <?php $wm_opacity = (int) get_option('mjashik_npc_watermark_opacity', 8); ?>
+                            <input type="range"
+                                   id="mjashik_npc_watermark_opacity"
+                                   name="mjashik_npc_watermark_opacity"
+                                   value="<?php echo esc_attr($wm_opacity); ?>"
+                                   min="0" max="30" step="1"
+                                   style="width:200px; vertical-align:middle;" 
+                                   oninput="document.getElementById('wm_opacity_val').textContent=this.value+'%'" />
+                            <span id="wm_opacity_val" style="font-weight:600; margin-left:8px;"><?php echo esc_html($wm_opacity); ?>%</span>
+                            <p class="description"><?php esc_html_e('Set to 0 to hide watermark. Default: 8%', 'news-photo-card'); ?></p>
                         </td>
                     </tr>
 
@@ -328,6 +355,7 @@ class MJASHIK_NPC_Admin_Settings {
                 
                 <?php submit_button(); ?>
             </form>
+            </div><!-- /LEFT COLUMN -->
 
             <?php
             // Current settings for preview
@@ -344,7 +372,7 @@ class MJASHIK_NPC_Admin_Settings {
             $prev_website      = get_option('mjashik_npc_website_url', '');
 
             // Demo values
-            $demo_title = 'শীতের সকালে ঘন কুয়াশায় ঢেকেছে রাজধানী ঢাকা';
+            $demo_title = 'সুপার ফাস্ট নিউজপেপার হোস্টিং কিনুন HOSTBUY.BD থেকে';
             $demo_date  = date_i18n($prev_date_fmt, current_time('timestamp'));
 
             // Scale: render card at 800×800 then CSS-scale to 400×400
@@ -361,11 +389,12 @@ class MJASHIK_NPC_Admin_Settings {
                 : "background-color:" . esc_attr($prev_title_bg) . ";";
             ?>
 
-            <hr style="margin:30px 0;">
-            <h2 style="margin-bottom:6px;"><?php esc_html_e('📸 Photo Card Preview', 'news-photo-card'); ?></h2>
-            <p class="description" style="margin-bottom:20px;"><?php esc_html_e('This is how your generated photo card will look. Save changes to refresh the preview.', 'news-photo-card'); ?></p>
+            <!-- RIGHT COLUMN: Preview (sticky) -->
+            <div style="flex:0 0 420px; position:sticky; top:40px;">
+                <h3 style="margin-top:0; margin-bottom:10px;">📸 <?php esc_html_e('Photo Card Preview', 'news-photo-card'); ?></h3>
+                <p class="description" style="margin-bottom:15px;"><?php esc_html_e('Save changes to refresh.', 'news-photo-card'); ?></p>
 
-            <div style="display:flex; gap:30px; align-items:flex-start; flex-wrap:wrap;">
+            <div style="display:flex; flex-direction:column; gap:20px; align-items:flex-start;">
 
                 <!-- Outer wrapper holds scaled space (400×400) -->
                 <div style="width:<?php echo $scaled_w; ?>px; height:<?php echo $scaled_h; ?>px; flex-shrink:0; position:relative;">
@@ -409,7 +438,8 @@ class MJASHIK_NPC_Admin_Settings {
                                 <?php endif; ?>
                                 <!-- Watermark logo -->
                                 <?php if ($prev_logo): ?>
-                                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:0.05; width:55%; z-index:2;">
+                                <?php $wm_opac_val = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100; ?>
+                                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:<?php echo esc_attr($wm_opac_val); ?>; width:55%; z-index:2;">
                                     <img src="<?php echo esc_url($prev_logo); ?>" style="width:100%; height:auto;" />
                                 </div>
                                 <?php endif; ?>
@@ -447,7 +477,10 @@ class MJASHIK_NPC_Admin_Settings {
                     </div>
                 </div>
 
-            </div><!-- /.preview-wrap -->
+            </div><!-- /.preview-cards -->
+            </div><!-- /RIGHT COLUMN -->
+
+            </div><!-- /.two-column-layout -->
 
         </div><!-- /.wrap -->
         <?php
