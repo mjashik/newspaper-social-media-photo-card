@@ -17,8 +17,8 @@ jQuery(document).ready(function ($) {
             button.prev('input').val(attachment.url);
 
             // Show preview if exists
-            var previewId = button.attr('id') === 'mjashik_upload_logo_btn' ? '#mjashik_logo_preview' : '#mjashik_bg_preview';
-            $(previewId).html('<img src="' + attachment.url + '" style="max-width: 300px; max-height: 200px; margin-top: 10px; border: 1px solid #ddd; padding: 5px;">');
+            var previewId = button.parent().find('.mjashik-image-preview');
+            previewId.html('<img src="' + attachment.url + '" style="max-width: 300px; max-height: 200px; margin-top: 10px; border: 1px solid #ddd; padding: 5px;">');
 
         }).open();
     });

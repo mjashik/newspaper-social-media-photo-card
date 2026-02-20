@@ -38,9 +38,6 @@ class MJASHIK_NPC_Admin_Settings {
         // Logo setting
         register_setting('mjashik_npc_settings', 'mjashik_npc_logo_url');
         
-        // Background setting
-        register_setting('mjashik_npc_settings', 'mjashik_npc_background_url');
-        
         // Title font color
         register_setting('mjashik_npc_settings', 'mjashik_npc_font_color');
         
@@ -139,27 +136,6 @@ class MJASHIK_NPC_Admin_Settings {
                             <div class="mjashik-image-preview">
                                 <?php if (get_option('mjashik_npc_logo_url')): ?>
                                     <img src="<?php echo esc_url(get_option('mjashik_npc_logo_url')); ?>" style="max-width: 200px; margin-top: 10px;" />
-                                <?php endif; ?>
-                            </div>
-                        </td>
-                    </tr>
-                    
-                    <tr>
-                        <th scope="row">
-                            <label><?php echo esc_html__('Background Image', 'news-photo-card'); ?></label>
-                        </th>
-                        <td>
-                            <input type="text" 
-                                   id="mjashik_npc_background_url" 
-                                   name="mjashik_npc_background_url" 
-                                   value="<?php echo esc_attr(get_option('mjashik_npc_background_url')); ?>" 
-                                   class="regular-text" />
-                            <button type="button" class="button mjashik-upload-button" data-target="mjashik_npc_background_url">
-                                <?php echo esc_html__('Upload Background', 'news-photo-card'); ?>
-                            </button>
-                            <div class="mjashik-image-preview">
-                                <?php if (get_option('mjashik_npc_background_url')): ?>
-                                    <img src="<?php echo esc_url(get_option('mjashik_npc_background_url')); ?>" style="max-width: 200px; margin-top: 10px;" />
                                 <?php endif; ?>
                             </div>
                         </td>
@@ -357,7 +333,6 @@ class MJASHIK_NPC_Admin_Settings {
             <?php
             // Current settings for preview
             $prev_logo         = get_option('mjashik_npc_logo_url');
-            $prev_bg           = get_option('mjashik_npc_background_url');
             $prev_font_color   = get_option('mjashik_npc_font_color', '#1a1a1a');
             $prev_title_bg     = get_option('mjashik_npc_title_area_bg_color', '#ffffff');
             $prev_date_bg      = get_option('mjashik_npc_date_bg_color', '#e74c3c');
@@ -401,12 +376,7 @@ class MJASHIK_NPC_Admin_Settings {
                         <div style="width:<?php echo $card_w; ?>px; height:<?php echo $card_h; ?>px; position:relative; overflow:hidden; font-family:'Noto Sans Bengali',sans-serif; background:#fff; display:flex; flex-direction:column;">
 
                             <!-- 1. IMAGE AREA — flex:1 fills remaining space -->
-                            <?php
-                                $img_bg_style = $prev_bg
-                                    ? "background-image:url('" . esc_url($prev_bg) . "'); background-size:cover; background-position:center top;"
-                                    : "background:linear-gradient(135deg,#dde3ea 0%,#b2bec3 100%);";
-                            ?>
-                            <div style="position:relative; width:100%; flex:1 1 auto; min-height:200px; overflow:hidden; <?php echo $img_bg_style; ?>">
+                            <div style="position:relative; width:100%; flex:1 1 auto; min-height:200px; overflow:hidden; background:linear-gradient(135deg,#dde3ea 0%,#b2bec3 100%);">
 
                                 <!-- Gradient overlay — z-index:10 -->
                                 <div style="position:absolute; bottom:0; left:0; width:100%; height:160px; background:linear-gradient(to top,rgba(0,0,0,0.65),transparent); z-index:10;"></div>
@@ -429,10 +399,6 @@ class MJASHIK_NPC_Admin_Settings {
 
                             <!-- 2. TITLE AREA — flex:0 auto height, custom bg & text color -->
                             <div style="position:relative; width:100%; flex:0 0 auto; border-top:5px solid <?php echo esc_attr($prev_date_bg); ?>; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 50px; text-align:center; overflow:hidden; <?php echo $title_bg_style; ?>">
-                                <?php if ($prev_bg): ?>
-                                <!-- Overlay for readability over background image -->
-                                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.82); z-index:1;"></div>
-                                <?php endif; ?>
                                 <!-- Watermark logo -->
                                 <?php if ($prev_logo): ?>
                                 <?php $wm_opac_val = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100; ?>

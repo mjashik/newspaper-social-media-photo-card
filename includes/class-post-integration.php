@@ -139,19 +139,14 @@ class MJASHIK_NPC_Post_Integration {
         
         // Settings
         $logo_url       = get_option('mjashik_npc_logo_url');
-        $background_url = get_option('mjashik_npc_background_url');
         $font_color     = get_option('mjashik_npc_font_color', '#1a1a1a');
-        $title_area_bg  = get_option('mjashik_npc_title_area_bg_color', '#ffffff');
-        $date_bg        = get_option('mjashik_npc_date_bg_color', '#e74c3c');
+        $title_area_bg  = get_option('mjashik_npc_title_area_bg_color', '#AA0001');
+        $date_bg        = get_option('mjashik_npc_date_bg_color', '#AA0001');
         $date_color     = get_option('mjashik_npc_date_text_color', '#ffffff');
-        $footer_bg      = get_option('mjashik_npc_footer_bg_color', '#2c3e50');
+        $footer_bg      = get_option('mjashik_npc_footer_bg_color', '#AA0001');
         $footer_color   = get_option('mjashik_npc_footer_text_color', '#ffffff');
         $date_format    = get_option('mjashik_npc_date_format', 'd F Y');
-        
-        // Clean up website URL for display (remove http/https)
         $website_url    = get_option('mjashik_npc_website_url', '');
-        $website_url    = preg_replace('#^https?://#', '', $website_url);
-        
         $title_fs       = get_option('mjashik_npc_title_font_size', 42);
         
         $thumbnail_url = get_the_post_thumbnail_url($post_id, 'full');
@@ -188,15 +183,9 @@ class MJASHIK_NPC_Post_Integration {
                     </div>
                 </div>
 
-                <!-- 2. TITLE AREA — auto height, customizable bg & text color -->
-                <div style='position:relative; width:100%; flex:0 0 auto; border-top:5px solid " . esc_attr($date_bg) . "; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 50px; text-align:center; overflow:hidden; "
-                    . ($background_url
-                        ? "background-image:url(" . esc_url($background_url) . "); background-size:cover; background-position:center;"
-                        : "background-color:" . esc_attr($title_area_bg) . ";")
-                    . "'>
+                <!-- 2. TITLE AREA — auto height, custom bg & text color -->
+                <div style='position:relative; width:100%; flex:0 0 auto; border-top:5px solid " . esc_attr($date_bg) . "; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 50px; text-align:center; overflow:hidden; background-color:" . esc_attr($title_area_bg) . ";'>
 
-                    " . ($background_url ? "<!-- Semi-transparent overlay for readability over image -->
-                    <div style='position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.82); z-index:1;'></div>" : "") . "
                     <!-- Watermark logo -->
                     <div style='position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:" . esc_attr(((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100) . "; width:55%; pointer-events:none; z-index:2;'>
                         " . ($logo_url ? "<img src='" . esc_url($logo_url) . "' style='width:100%; height:auto;' crossorigin='anonymous'>" : "") . "
