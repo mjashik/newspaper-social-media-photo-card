@@ -31,8 +31,8 @@ class MJASHIK_NPC_Post_Integration {
         global $post;
         
         if (($hook == 'post-new.php' || $hook == 'post.php') && get_post_type() == 'post') {
-            // Load html2canvas from CDN
-            wp_enqueue_script('html2canvas', 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', [], '1.4.1', true);
+            // Load html2canvas from local assets
+            wp_enqueue_script('html2canvas', MJASHIK_NPC_PLUGIN_URL . 'assets/js/html2canvas.min.js', [], '1.4.1', true);
             
             wp_enqueue_style(
                 'mjashik-npc-admin-css',
@@ -49,7 +49,7 @@ class MJASHIK_NPC_Post_Integration {
                 true
             );
             
-            wp_localize_script('mjashik-npc-admin-js', 'mjashikNPC', array(
+            wp_localize_script('mjashik-npc-admin-js', 'mjashik_npc_data', array(
                 'post_id' => isset($post) ? $post->ID : 0,
                 'generating_text' => __('Generating...', 'newspaper-social-media-photo-card'),
                 'download_text' => __('Download Photo Card', 'newspaper-social-media-photo-card'),
@@ -67,7 +67,7 @@ class MJASHIK_NPC_Post_Integration {
         <div class="mjashik-npc-admin-container" style="margin-top: 10px; margin-bottom: 20px;">
             <button type="button" id="mjashik-download-card-btn" class="button button-primary button-large">
                 <span class="dashicons dashicons-camera" style="margin-top: 3px; margin-right: 5px;"></span>
-                <?php _e('Download Photo Card', 'newspaper-social-media-photo-card'); ?>
+                <?php esc_html_e('Download Photo Card', 'newspaper-social-media-photo-card'); ?>
             </button>
             <span id="mjashik-card-loading" style="display: none; margin-left: 10px; vertical-align: middle;">
                 <span class="spinner is-active" style="float: none; margin: 0;"></span> Generating...
@@ -82,7 +82,7 @@ class MJASHIK_NPC_Post_Integration {
     public function mjashik_frontend_enqueue_scripts() {
         if (is_single() && get_post_type() === 'post') {
             global $post;
-            wp_enqueue_script('html2canvas', 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', [], '1.4.1', true);
+            wp_enqueue_script('html2canvas', MJASHIK_NPC_PLUGIN_URL . 'assets/js/html2canvas.min.js', [], '1.4.1', true);
             
             // Enqueue dashicons for the button icon (usually only loaded for logged-in users)
             wp_enqueue_style('dashicons');
@@ -90,7 +90,7 @@ class MJASHIK_NPC_Post_Integration {
             // Reusing admin CSS/JS for the card rendering and button functionality
             wp_enqueue_style('mjashik-npc-admin-css', MJASHIK_NPC_PLUGIN_URL . 'assets/css/admin.css', array(), MJASHIK_NPC_VERSION);
             wp_enqueue_script('mjashik-npc-admin-js', MJASHIK_NPC_PLUGIN_URL . 'assets/js/admin.js', array('jquery', 'html2canvas'), MJASHIK_NPC_VERSION, true);
-            wp_localize_script('mjashik-npc-admin-js', 'mjashikNPC', array(
+            wp_localize_script('mjashik-npc-admin-js', 'mjashik_npc_data', array(
                 'post_id' => isset($post) ? $post->ID : 0,
                 'generating_text' => esc_html__('Generating...', 'newspaper-social-media-photo-card'),
                 'download_text' => esc_html__('Download Photo Card', 'newspaper-social-media-photo-card'),

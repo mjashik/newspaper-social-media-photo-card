@@ -119,7 +119,7 @@ class MJASHIK_NPC_Admin_Settings {
      */
     public function mjashik_process_settings_reset() {
         if (isset($_POST['mjashik_npc_reset_settings']) && isset($_POST['mjashik_npc_reset_nonce'])) {
-            if (!wp_verify_nonce($_POST['mjashik_npc_reset_nonce'], 'mjashik_npc_reset_action')) {
+            if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mjashik_npc_reset_nonce'])), 'mjashik_npc_reset_action')) {
                 wp_die(__('Security check failed', 'newspaper-social-media-photo-card'));
             }
             
@@ -471,11 +471,11 @@ class MJASHIK_NPC_Admin_Settings {
             <div style="display:flex; flex-direction:column; gap:20px; align-items:flex-start;">
 
                 <!-- Outer wrapper holds scaled space (400×400) -->
-                <div style="width:<?php echo $scaled_w; ?>px; height:<?php echo $scaled_h; ?>px; flex-shrink:0; position:relative;">
+                <div style="width:<?php echo esc_attr($scaled_w); ?>px; height:<?php echo esc_attr($scaled_h); ?>px; flex-shrink:0; position:relative;">
                     <!-- Scale wrapper (800×800 → 50%) -->
-                    <div style="transform-origin:top left; transform:scale(<?php echo $scale; ?>); width:<?php echo $card_w; ?>px; height:<?php echo $card_h; ?>px; box-shadow:0 8px 40px rgba(0,0,0,0.22); border-radius:6px; overflow:hidden; position:absolute; top:0; left:0;">
+                    <div style="transform-origin:top left; transform:scale(<?php echo esc_attr($scale); ?>); width:<?php echo esc_attr($card_w); ?>px; height:<?php echo esc_attr($card_h); ?>px; box-shadow:0 8px 40px rgba(0,0,0,0.22); border-radius:6px; overflow:hidden; position:absolute; top:0; left:0;">
                         <!-- Card: flex column, image grows, title auto, footer fixed -->
-                        <div style="width:<?php echo $card_w; ?>px; height:<?php echo $card_h; ?>px; position:relative; overflow:hidden; font-family:'Noto Sans Bengali',sans-serif; background:#fff; display:flex; flex-direction:column;">
+                        <div style="width:<?php echo esc_attr($card_w); ?>px; height:<?php echo esc_attr($card_h); ?>px; position:relative; overflow:hidden; font-family:'Noto Sans Bengali',sans-serif; background:#fff; display:flex; flex-direction:column;">
 
                             <!-- 1. IMAGE AREA — flex:1 fills remaining space -->
                             <div style="position:relative; width:100%; flex:1 1 auto; min-height:200px; overflow:hidden; background:linear-gradient(135deg,#dde3ea 0%,#b2bec3 100%);">
@@ -500,7 +500,7 @@ class MJASHIK_NPC_Admin_Settings {
 
 
                             <!-- 2. TITLE AREA — flex:0 auto height, custom bg & text color -->
-                            <div style="position:relative; width:100%; flex:0 0 auto; border-top:5px solid <?php echo esc_attr($prev_date_bg); ?>; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 50px; text-align:center; overflow:hidden; <?php echo $title_bg_style; ?>">
+                            <div style="position:relative; width:100%; flex:0 0 auto; border-top:5px solid <?php echo esc_attr($prev_date_bg); ?>; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 50px; text-align:center; overflow:hidden; <?php echo esc_attr($title_bg_style); ?>">
                                 <!-- Watermark logo -->
                                 <?php if ($prev_logo): ?>
                                 <?php $wm_opac_val = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100; ?>
@@ -511,14 +511,14 @@ class MJASHIK_NPC_Admin_Settings {
 
                                 <!-- Headline -->
                                 <div style="position:relative; z-index:10; width:100%;">
-                                    <h1 style="margin:0; padding:0; font-size:<?php echo $prev_title_size; ?>px; line-height:1.5; font-weight:700; color:<?php echo esc_attr($prev_font_color); ?>; width:100%; text-shadow:0 1px 2px rgba(0,0,0,0.06);">
+                                    <h1 style="margin:0; padding:0; font-size:<?php echo esc_attr($prev_title_size); ?>px; line-height:1.5; font-weight:700; color:<?php echo esc_attr($prev_font_color); ?>; width:100%; text-shadow:0 1px 2px rgba(0,0,0,0.06);">
                                         <?php echo esc_html($demo_title); ?>
                                     </h1>
                                 </div>
                             </div>
 
                             <!-- 3. FOOTER — fixed height, custom colors -->
-                            <div style="width:100%; height:<?php echo $footer_h; ?>px; background:<?php echo esc_attr($prev_footer_bg); ?>; color:<?php echo esc_attr($prev_footer_color); ?>; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; letter-spacing:1.5px; flex:0 0 <?php echo $footer_h; ?>px; position:relative; overflow:hidden;">
+                            <div style="width:100%; height:<?php echo esc_attr($footer_h); ?>px; background:<?php echo esc_attr($prev_footer_bg); ?>; color:<?php echo esc_attr($prev_footer_color); ?>; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; letter-spacing:1.5px; flex:0 0 <?php echo esc_attr($footer_h); ?>px; position:relative; overflow:hidden;">
                                 <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:rgba(255,255,255,0.1);"></div>
                                 <span style="text-shadow:0 2px 4px rgba(0,0,0,0.2);"><?php echo esc_html($prev_website ?: 'www.hostbuybd.com'); ?></span>
                             </div>

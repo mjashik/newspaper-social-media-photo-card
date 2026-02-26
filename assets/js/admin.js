@@ -195,7 +195,7 @@ jQuery(document).ready(function ($) {
 
                 // Trigger download
                 var link = document.createElement('a');
-                link.download = 'news-card-' + (mjashikNPC.post_id || 'image') + '.png';
+                link.download = 'news-card-' + (mjashik_npc_data.post_id || 'image') + '.png';
                 link.href = canvas.toDataURL("image/png");
                 link.click();
 

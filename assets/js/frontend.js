@@ -32,7 +32,7 @@ jQuery(document).ready(function ($) {
         }).then(function (canvas) {
             // Trigger download
             var link = document.createElement('a');
-            link.download = 'news-card-' + (mjashikNPC.post_id || 'image') + '.jpg';
+            link.download = 'news-card-' + (mjashik_npc_data.post_id || 'image') + '.jpg';
             link.href = canvas.toDataURL("image/jpeg", 0.9);
             link.click();
 
