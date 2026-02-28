@@ -1,6 +1,6 @@
 === Newspaper Social Media Photo Card ===
 Contributors: mjashik
-Tags: news card, photo card, newspaper photo card, newspaper image generator, newspaper thumbnail, newspaper social media card
+Tags: news card, photo card, newspaper photo card, newspaper image generator, newspaper thumbnail
 Requires at least: 5.0
 Tested up to: 6.9
 Stable tag: 1.0.0
