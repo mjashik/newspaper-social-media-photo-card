@@ -1,9 +1,9 @@
 === Newspaper Social Media Photo Card ===
 Contributors: mjashik
-Tags: news card, photo card, newspaper photo card, newspaper image generator, newspaper thumbnail
+Tags: news photo card, newspaper photo card, newspaper photo generator, news card, photo card
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -42,9 +42,11 @@ Currently, the button appears on standard WordPress "Posts".
 
 1. The admin settings page with the live preview.
 2. The Download Photo Card button in the WordPress editor.
-3. Example of a generated News Photo Card.
 
 == Changelog ==
+
+= 1.1.0 =
+* Added: Option to select from 20 bundled popular Bangla fonts for the card Title and Date badge. Downloaded seamlessly from local plugin files.
 
 = 1.0.0 =
 * Initial release.

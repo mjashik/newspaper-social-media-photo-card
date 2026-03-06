@@ -10,6 +10,34 @@ if (!defined('ABSPATH')) {
 
 class MJASHIK_NPC_Admin_Settings {
     
+    /**
+     * All available Bangla fonts
+     */
+    private function mjashik_get_font_list() {
+        return array(
+            'SolaimanLipi'         => __('SolaimanLipi', 'newspaper-social-media-photo-card'),
+            'Nikosh'               => __('Nikosh', 'newspaper-social-media-photo-card'),
+            'SiyamRupali'          => __('SiyamRupali', 'newspaper-social-media-photo-card'),
+            'Kalpurush'            => __('Kalpurush', 'newspaper-social-media-photo-card'),
+            'Mukti'                => __('Mukti', 'newspaper-social-media-photo-card'),
+            'AdorshoLipi'          => __('AdorshoLipi', 'newspaper-social-media-photo-card'),
+            'AponaLohit'           => __('AponaLohit', 'newspaper-social-media-photo-card'),
+            'BalooDa2'             => __('Baloo Da 2', 'newspaper-social-media-photo-card'),
+            'Bensen'               => __('Bensen', 'newspaper-social-media-photo-card'),
+            'BensenHandwriting'    => __('Bensen Handwriting', 'newspaper-social-media-photo-card'),
+            'CharuChandan'         => __('Charu Chandan', 'newspaper-social-media-photo-card'),
+            'CharuChandan3D'       => __('Charu Chandan 3D', 'newspaper-social-media-photo-card'),
+            'CharuChandanHardStroke' => __('Charu Chandan Hard Stroke', 'newspaper-social-media-photo-card'),
+            'CharukolaUltraLight'  => __('Charukola Ultra Light', 'newspaper-social-media-photo-card'),
+            'EkusheyLohit'         => __('Ekushey Lohit', 'newspaper-social-media-photo-card'),
+            'LohitBengali'         => __('Lohit Bengali', 'newspaper-social-media-photo-card'),
+            'NotoSerifBengali'     => __('Noto Serif Bengali', 'newspaper-social-media-photo-card'),
+            'TiroBangla'           => __('Tiro Bangla', 'newspaper-social-media-photo-card'),
+            'Vrinda'               => __('Vrinda', 'newspaper-social-media-photo-card'),
+            'BanglaFont'           => __('Bangla', 'newspaper-social-media-photo-card'),
+        );
+    }
+
     public function __construct() {
         add_action('admin_menu', array($this, 'mjashik_add_admin_menu'));
         add_action('admin_init', array($this, 'mjashik_register_settings'));
@@ -96,6 +124,11 @@ class MJASHIK_NPC_Admin_Settings {
             'sanitize_callback' => 'absint',
         ));
         
+        // Footer font size
+        register_setting('mjashik_npc_settings', 'mjashik_npc_footer_font_size', array(
+            'sanitize_callback' => 'absint',
+        ));
+        
         // Website URL
         register_setting('mjashik_npc_settings', 'mjashik_npc_website_url', array(
             'sanitize_callback' => 'sanitize_text_field',
@@ -105,6 +138,16 @@ class MJASHIK_NPC_Admin_Settings {
         register_setting('mjashik_npc_settings', 'mjashik_npc_watermark_opacity', array(
             'sanitize_callback' => 'absint',
         ));
+
+        // Title font
+        register_setting('mjashik_npc_settings', 'mjashik_npc_title_font', array(
+            'sanitize_callback' => array($this, 'mjashik_sanitize_font'),
+        ));
+
+        // Date font
+        register_setting('mjashik_npc_settings', 'mjashik_npc_date_font', array(
+            'sanitize_callback' => array($this, 'mjashik_sanitize_font'),
+        ));
     }
     
     /**
@@ -112,6 +155,14 @@ class MJASHIK_NPC_Admin_Settings {
      */
     public function mjashik_sanitize_yes_no($value) {
         return in_array($value, array('yes', 'no'), true) ? $value : 'yes';
+    }
+
+    /**
+     * Sanitize font selection — must be one of the allowed font keys
+     */
+    public function mjashik_sanitize_font($value) {
+        $allowed = array_keys($this->mjashik_get_font_list());
+        return in_array($value, $allowed, true) ? $value : 'SolaimanLipi';
     }
     
     /**
@@ -139,8 +190,11 @@ class MJASHIK_NPC_Admin_Settings {
             delete_option('mjashik_npc_show_download_button');
             delete_option('mjashik_npc_title_font_size');
             delete_option('mjashik_npc_date_font_size');
+            delete_option('mjashik_npc_footer_font_size');
             delete_option('mjashik_npc_website_url');
             delete_option('mjashik_npc_watermark_opacity');
+            delete_option('mjashik_npc_title_font');
+            delete_option('mjashik_npc_date_font');
             
             add_settings_error('mjashik_npc_messages', 'mjashik_npc_message', __('Settings restored to default values', 'newspaper-social-media-photo-card'), 'updated');
         }
@@ -157,11 +211,18 @@ class MJASHIK_NPC_Admin_Settings {
         wp_enqueue_media();
         wp_enqueue_style('wp-color-picker');
         wp_enqueue_script('wp-color-picker');
+
+        wp_enqueue_style(
+            'mjashik-npc-bangla-fonts',
+            MJASHIK_NPC_PLUGIN_URL . 'assets/css/bangla-fonts.css',
+            array(),
+            MJASHIK_NPC_VERSION
+        );
         
         wp_enqueue_style(
             'mjashik-npc-admin',
             MJASHIK_NPC_PLUGIN_URL . 'assets/css/admin.css',
-            array(),
+            array('mjashik-npc-bangla-fonts'),
             MJASHIK_NPC_VERSION
         );
         
@@ -212,6 +273,59 @@ class MJASHIK_NPC_Admin_Settings {
                         </td>
                     </tr>
                     
+                    <!-- ============ FONT SETTINGS ============ -->
+                    <tr>
+                        <td colspan="2" style="padding: 15px 0 6px;">
+                            <h2 style="margin:0; padding: 8px 12px; background:#2c3e50; color:#fff; border-radius:4px; font-size:14px;">
+                                🔤 <?php esc_html_e('Font Settings', 'newspaper-social-media-photo-card'); ?>
+                            </h2>
+                        </td>
+                    </tr>
+
+                    <!-- Title Font -->
+                    <tr>
+                        <th scope="row" style="padding-left:20px;">
+                            <label for="mjashik_npc_title_font"><?php esc_html_e('📝 Title Font', 'newspaper-social-media-photo-card'); ?></label>
+                        </th>
+                        <td>
+                            <?php
+                            $selected_title_font = get_option('mjashik_npc_title_font', 'SolaimanLipi');
+                            ?>
+                            <select id="mjashik_npc_title_font" name="mjashik_npc_title_font" style="font-size:14px;">
+                                <?php foreach ($this->mjashik_get_font_list() as $font_key => $font_label) : ?>
+                                    <option value="<?php echo esc_attr($font_key); ?>"
+                                        style="font-family:<?php echo esc_attr($font_key); ?>, sans-serif;"
+                                        <?php selected($selected_title_font, $font_key); ?>>
+                                        <?php echo esc_html($font_label); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <p class="description"><?php esc_html_e('Font for the news title on the photo card. Default: SolaimanLipi', 'newspaper-social-media-photo-card'); ?></p>
+                        </td>
+                    </tr>
+
+                    <!-- Date Font -->
+                    <tr>
+                        <th scope="row" style="padding-left:20px;">
+                            <label for="mjashik_npc_date_font"><?php esc_html_e('📅 Date Badge Font', 'newspaper-social-media-photo-card'); ?></label>
+                        </th>
+                        <td>
+                            <?php
+                            $selected_date_font = get_option('mjashik_npc_date_font', 'SolaimanLipi');
+                            ?>
+                            <select id="mjashik_npc_date_font" name="mjashik_npc_date_font" style="font-size:14px;">
+                                <?php foreach ($this->mjashik_get_font_list() as $font_key => $font_label) : ?>
+                                    <option value="<?php echo esc_attr($font_key); ?>"
+                                        style="font-family:<?php echo esc_attr($font_key); ?>, sans-serif;"
+                                        <?php selected($selected_date_font, $font_key); ?>>
+                                        <?php echo esc_html($font_label); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <p class="description"><?php esc_html_e('Font for the date badge on the photo card. Default: SolaimanLipi', 'newspaper-social-media-photo-card'); ?></p>
+                        </td>
+                    </tr>
+
                     <!-- ============ COLOR SETTINGS ============ -->
                     <tr>
                         <td colspan="2" style="padding: 15px 0 6px;">
@@ -343,10 +457,10 @@ class MJASHIK_NPC_Admin_Settings {
                             <input type="number" 
                                    id="mjashik_npc_title_font_size" 
                                    name="mjashik_npc_title_font_size" 
-                                   value="<?php echo esc_attr(get_option('mjashik_npc_title_font_size', '32')); ?>" 
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_title_font_size', '42')); ?>" 
                                    min="10" 
                                    max="100" />
-                            <span class="description"><?php echo esc_html__('Font size in pixels', 'newspaper-social-media-photo-card'); ?></span>
+                            <span class="description"><?php echo esc_html__('Font size in pixels (Default: 42)', 'newspaper-social-media-photo-card'); ?></span>
                         </td>
                     </tr>
                     
@@ -358,10 +472,25 @@ class MJASHIK_NPC_Admin_Settings {
                             <input type="number" 
                                    id="mjashik_npc_date_font_size" 
                                    name="mjashik_npc_date_font_size" 
-                                   value="<?php echo esc_attr(get_option('mjashik_npc_date_font_size', '20')); ?>" 
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_date_font_size', '18')); ?>" 
                                    min="10" 
                                    max="50" />
-                            <span class="description"><?php echo esc_html__('Font size in pixels', 'newspaper-social-media-photo-card'); ?></span>
+                            <span class="description"><?php echo esc_html__('Font size in pixels (Default: 18)', 'newspaper-social-media-photo-card'); ?></span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">
+                            <label for="mjashik_npc_footer_font_size"><?php echo esc_html__('Website Text Size', 'newspaper-social-media-photo-card'); ?></label>
+                        </th>
+                        <td>
+                            <input type="number" 
+                                   id="mjashik_npc_footer_font_size" 
+                                   name="mjashik_npc_footer_font_size" 
+                                   value="<?php echo esc_attr(get_option('mjashik_npc_footer_font_size', '22')); ?>" 
+                                   min="10" 
+                                   max="50" />
+                            <span class="description"><?php echo esc_html__('Font size in pixels (Default: 22)', 'newspaper-social-media-photo-card'); ?></span>
                         </td>
                     </tr>
                     
@@ -444,8 +573,12 @@ class MJASHIK_NPC_Admin_Settings {
             $prev_footer_bg    = get_option('mjashik_npc_footer_bg_color', '#AA0001');
             $prev_footer_color = get_option('mjashik_npc_footer_text_color', '#ffffff');
             $prev_title_size   = (int) get_option('mjashik_npc_title_font_size', 42);
+            $prev_date_size    = (int) get_option('mjashik_npc_date_font_size', 18);
+            $prev_footer_size  = (int) get_option('mjashik_npc_footer_font_size', 22);
             $prev_date_fmt     = get_option('mjashik_npc_date_format', 'd F Y');
             $prev_website      = get_option('mjashik_npc_website_url', 'www.hostbuybd.com');
+            $prev_title_font   = get_option('mjashik_npc_title_font', 'SolaimanLipi');
+            $prev_date_font    = get_option('mjashik_npc_date_font', 'SolaimanLipi');
 
             // Demo values
             $demo_title = 'সুপার ফাস্ট নিউজপেপার হোস্টিং কিনুন HOSTBUY.BD থেকে';
@@ -493,7 +626,7 @@ class MJASHIK_NPC_Admin_Settings {
                                 </div>
 
                                 <!-- Date badge — z-index:30 -->
-                                <div style="position:absolute; top:28px; right:28px; background:<?php echo esc_attr($prev_date_bg); ?>; color:<?php echo esc_attr($prev_date_color); ?>; padding:10px 22px; font-weight:bold; font-size:18px; border-radius:50px; box-shadow:0 4px 12px rgba(0,0,0,0.3); z-index:30; border:2px solid rgba(255,255,255,0.5);">
+                                <div style="position:absolute; top:28px; right:28px; background:<?php echo esc_attr($prev_date_bg); ?>; color:<?php echo esc_attr($prev_date_color); ?>; padding:10px 22px; font-weight:bold; font-size:18px; border-radius:50px; box-shadow:0 4px 12px rgba(0,0,0,0.3); z-index:30; border:2px solid rgba(255,255,255,0.5); font-family:<?php echo esc_attr($prev_date_font); ?>,sans-serif;">
                                     <?php echo esc_html($demo_date); ?>
                                 </div>
                             </div>
@@ -511,14 +644,14 @@ class MJASHIK_NPC_Admin_Settings {
 
                                 <!-- Headline -->
                                 <div style="position:relative; z-index:10; width:100%;">
-                                    <h1 style="margin:0; padding:0; font-size:<?php echo esc_attr($prev_title_size); ?>px; line-height:1.5; font-weight:700; color:<?php echo esc_attr($prev_font_color); ?>; width:100%; text-shadow:0 1px 2px rgba(0,0,0,0.06);">
+                                    <h1 style="margin:0; padding:0; font-size:<?php echo esc_attr($prev_title_size); ?>px; line-height:1.5; font-weight:700; color:<?php echo esc_attr($prev_font_color); ?>; width:100%; text-shadow:0 1px 2px rgba(0,0,0,0.06); font-family:<?php echo esc_attr($prev_title_font); ?>,sans-serif;">
                                         <?php echo esc_html($demo_title); ?>
                                     </h1>
                                 </div>
                             </div>
 
                             <!-- 3. FOOTER — fixed height, custom colors -->
-                            <div style="width:100%; height:<?php echo esc_attr($footer_h); ?>px; background:<?php echo esc_attr($prev_footer_bg); ?>; color:<?php echo esc_attr($prev_footer_color); ?>; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; letter-spacing:1.5px; flex:0 0 <?php echo esc_attr($footer_h); ?>px; position:relative; overflow:hidden;">
+                            <div style="width:100%; height:<?php echo esc_attr($footer_h); ?>px; background:<?php echo esc_attr($prev_footer_bg); ?>; color:<?php echo esc_attr($prev_footer_color); ?>; display:flex; align-items:center; justify-content:center; font-size:<?php echo esc_attr($prev_footer_size); ?>px; font-weight:600; letter-spacing:1.5px; flex:0 0 <?php echo esc_attr($footer_h); ?>px; position:relative; overflow:hidden;">
                                 <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:rgba(255,255,255,0.1);"></div>
                                 <span style="text-shadow:0 2px 4px rgba(0,0,0,0.2);"><?php echo esc_html($prev_website ?: 'www.hostbuybd.com'); ?></span>
                             </div>

@@ -35,9 +35,16 @@ class MJASHIK_NPC_Post_Integration {
             wp_enqueue_script('html2canvas', MJASHIK_NPC_PLUGIN_URL . 'assets/js/html2canvas.min.js', [], '1.4.1', true);
             
             wp_enqueue_style(
+                'mjashik-npc-bangla-fonts',
+                MJASHIK_NPC_PLUGIN_URL . 'assets/css/bangla-fonts.css',
+                array(),
+                MJASHIK_NPC_VERSION
+            );
+
+            wp_enqueue_style(
                 'mjashik-npc-admin-css',
                 MJASHIK_NPC_PLUGIN_URL . 'assets/css/admin.css',
-                array(),
+                array('mjashik-npc-bangla-fonts'),
                 MJASHIK_NPC_VERSION
             );
             
@@ -87,8 +94,10 @@ class MJASHIK_NPC_Post_Integration {
             // Enqueue dashicons for the button icon (usually only loaded for logged-in users)
             wp_enqueue_style('dashicons');
 
+            wp_enqueue_style('mjashik-npc-bangla-fonts', MJASHIK_NPC_PLUGIN_URL . 'assets/css/bangla-fonts.css', array(), MJASHIK_NPC_VERSION);
+
             // Reusing admin CSS/JS for the card rendering and button functionality
-            wp_enqueue_style('mjashik-npc-admin-css', MJASHIK_NPC_PLUGIN_URL . 'assets/css/admin.css', array(), MJASHIK_NPC_VERSION);
+            wp_enqueue_style('mjashik-npc-admin-css', MJASHIK_NPC_PLUGIN_URL . 'assets/css/admin.css', array('mjashik-npc-bangla-fonts'), MJASHIK_NPC_VERSION);
             wp_enqueue_script('mjashik-npc-admin-js', MJASHIK_NPC_PLUGIN_URL . 'assets/js/admin.js', array('jquery', 'html2canvas'), MJASHIK_NPC_VERSION, true);
             wp_localize_script('mjashik-npc-admin-js', 'mjashik_npc_data', array(
                 'post_id' => isset($post) ? $post->ID : 0,
@@ -149,6 +158,8 @@ class MJASHIK_NPC_Post_Integration {
         $date_format    = get_option('mjashik_npc_date_format', 'd F Y');
         $website_url    = get_option('mjashik_npc_website_url', 'www.hostbuybd.com');
         $title_fs       = get_option('mjashik_npc_title_font_size', 42);
+        $title_font     = get_option('mjashik_npc_title_font', 'SolaimanLipi');
+        $date_font      = get_option('mjashik_npc_date_font', 'SolaimanLipi');
         
         $thumbnail_url = get_the_post_thumbnail_url($post_id, 'full');
         $date  = date_i18n($date_format, strtotime($post->post_date));
@@ -179,7 +190,7 @@ class MJASHIK_NPC_Post_Integration {
                     </div>
 
                     <!-- Date Badge (Top Right) -->
-                    <div style='position:absolute; top:28px; right:28px; background:" . esc_attr($date_bg) . "; color:" . esc_attr($date_color) . "; padding:10px 22px; font-weight:bold; font-size:18px; border-radius:50px; box-shadow:0 4px 12px rgba(0,0,0,0.3); z-index:30; border:2px solid rgba(255,255,255,0.6);'>
+                    <div style='position:absolute; top:28px; right:28px; background:" . esc_attr($date_bg) . "; color:" . esc_attr($date_color) . "; padding:10px 22px; font-weight:bold; font-size:18px; border-radius:50px; box-shadow:0 4px 12px rgba(0,0,0,0.3); z-index:30; border:2px solid rgba(255,255,255,0.6); font-family:" . esc_attr($date_font) . ",sans-serif;'>
                         " . esc_html($date) . "
                     </div>
                 </div>
@@ -194,7 +205,7 @@ class MJASHIK_NPC_Post_Integration {
 
                     <!-- Headline -->
                     <div style='position:relative; z-index:10; width:100%;'>
-                        <h1 style='margin:0; padding:0; font-size:" . esc_attr($title_fs) . "px; line-height:1.5; font-weight:700; color:" . esc_attr($font_color) . "; width:100%; text-shadow:0 1px 2px rgba(0,0,0,0.06);'>
+                        <h1 style='margin:0; padding:0; font-size:" . esc_attr($title_fs) . "px; line-height:1.5; font-weight:700; color:" . esc_attr($font_color) . "; width:100%; text-shadow:0 1px 2px rgba(0,0,0,0.06); font-family:" . esc_attr($title_font) . ",sans-serif;'>
                             " . esc_html($title) . "
                         </h1>
                     </div>

@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Newspaper Social Media Photo Card
  * Plugin URI: https://mjashik.com/newspaper-social-media-photo-card
- * Description: Generate beautiful photo cards for news posts with logo, date, title, and background image.
- * Version: 1.0.0
+ * Description: Generate beautiful photo cards for news posts with logo, date, title, and background image. Includes custom Bangla fonts support.
+ * Version: 1.1.0
  * Author: Monirud Jamman Ashik
  * Author URI: https://mjashik.com
  * License: GPLv2 or later
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('MJASHIK_NPC_VERSION', '1.0.0');
+define('MJASHIK_NPC_VERSION', '1.1.0');
 define('MJASHIK_NPC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('MJASHIK_NPC_PLUGIN_URL', plugin_dir_url(__FILE__));
 
