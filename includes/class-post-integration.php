@@ -132,19 +132,47 @@ class MJASHIK_NPC_Post_Integration {
     }
     
     /**
+     * Get SVG code for social icons
+     */
+    private function mjashik_get_social_icon_svg($type, $color = 'currentColor') {
+        $size = '20';
+        $style = 'width:'.$size.'px; height:'.$size.'px; fill:'.$color.';';
+        switch ($type) {
+            case 'facebook':
+                return '<svg style="'.$style.'" viewBox="0 0 24 24"><path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7h-2.54V12h2.54V9.79c0-2.5 1.5-3.89 3.77-3.89 1.1 0 2.23.2 2.23.2v2.45h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.95h-2.33v7C18.34 21.19 22 17.06 22 12.06c0-5.53-4.5-10.02-10-10.02z"/></svg>';
+            case 'twitter':
+                return '<svg style="'.$style.'" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>';
+            case 'instagram':
+                return '<svg style="'.$style.'" viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m8.4 2.4c.54 0 1 .45 1 1 0 .56-.46 1.01-1 1.01s-1-.45-1-1m-4 1.2c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4m0 1.6c-1.32 0-2.4 1.08-2.4 2.4 0 1.32 1.08 2.4 2.4 2.4s2.4-1.08 2.4-2.4c0-1.32-1.08-2.4-2.4-2.4z"/></svg>';
+            case 'youtube':
+                return '<svg style="'.$style.'" viewBox="0 0 24 24"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3z"/></svg>';
+            case 'linkedin':
+                return '<svg style="'.$style.'" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.56c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.66H9.33V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.36-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM3.55 20.45h3.57V9H3.55v11.45zM22 2H2v20h20V2z"/></svg>';
+        }
+        return '';
+    }
+
+    /**
      * Render the Hidden Card in Admin or Frontend Footer
      */
     public function mjashik_render_hidden_card() {
-        global $post;
+        global $post, $pagenow;
         
         // Check if we should render
         if (is_admin()) {
-            if (!$post || (get_post_type($post) !== 'post')) return;
+            if ($pagenow !== 'post.php' && $pagenow !== 'post-new.php') {
+                return;
+            }
+            $post_id = isset($_GET['post']) ? intval($_GET['post']) : (isset($post) ? $post->ID : 0);
+            $_post = get_post($post_id);
+            $post_date = $_post ? $_post->post_date : current_time('mysql');
+            $post_title = $_post ? $_post->post_title : '';
         } else {
             if (!is_single() || get_post_type() !== 'post') return;
+            $post_id = $post->ID;
+            $post_date = $post->post_date;
+            $post_title = $post->post_title;
         }
-        
-        $post_id = $post->ID;
         
         // Settings
         $logo_url       = get_option('mjashik_npc_logo_url');
@@ -158,19 +186,24 @@ class MJASHIK_NPC_Post_Integration {
         $date_format    = get_option('mjashik_npc_date_format', 'd F Y');
         $website_url    = get_option('mjashik_npc_website_url', 'www.hostbuybd.com');
         $title_fs       = get_option('mjashik_npc_title_font_size', 42);
+        $footer_fs      = get_option('mjashik_npc_footer_font_size', 22);
         $title_font     = get_option('mjashik_npc_title_font', 'SolaimanLipi');
         $date_font      = get_option('mjashik_npc_date_font', 'SolaimanLipi');
         
-        $thumbnail_url = get_the_post_thumbnail_url($post_id, 'full');
-        $date  = date_i18n($date_format, strtotime($post->post_date));
-        $title = $post->post_title;
+        $social_raw     = get_option('mjashik_npc_social_links', '[]');
+        $social_links   = json_decode($social_raw, true);
+        if (!is_array($social_links)) $social_links = array();
+        
+        $thumbnail_url = $post_id ? get_the_post_thumbnail_url($post_id, 'full') : '';
+        $date  = date_i18n($date_format, strtotime($post_date));
+        $title = $post_title;
 
         // Layout Config — dynamic: image flex-grows, title auto-height, footer fixed
         $card_w   = 800;
         $card_h   = 800;
-        $footer_h = 70;
+        $footer_h = 80;
 
-        echo "
+        $html = "
         <div id='npc-hidden-container' style='position:absolute; left:-9999px; top:-9999px;'>
             <div id='npc-card-capture' style='width:{$card_w}px; height:{$card_h}px; position:relative; overflow:hidden; font-family:\"Noto Sans Bengali\",sans-serif; background:#fff; display:flex; flex-direction:column;'>
 
@@ -211,14 +244,48 @@ class MJASHIK_NPC_Post_Integration {
                     </div>
                 </div>
 
-                <!-- 3. FOOTER — fixed height, customizable bg & text color -->
-                <div style='width:100%; height:{$footer_h}px; background:" . esc_attr($footer_bg) . "; color:" . esc_attr($footer_color) . "; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; letter-spacing:1.5px; flex:0 0 {$footer_h}px; position:relative; overflow:hidden;'>
+                <!-- 3. FOOTER — fixed height -->
+                <div style='width:100%; height:80px; background:" . esc_attr($footer_bg) . "; color:" . esc_attr($footer_color) . "; display:flex; align-items:center; justify-content:center; gap:20px; font-size:" . esc_attr($footer_fs) . "px; font-weight:600; letter-spacing:1px; flex:0 0 80px; position:relative; overflow:hidden;'>
                     <div style='position:absolute; top:0; left:0; width:100%; height:4px; background:rgba(255,255,255,0.1);'></div>
-                    <span style='text-shadow:0 2px 4px rgba(0,0,0,0.2);'>" . esc_html($website_url) . "</span>
+                    ";
+
+        if (!empty($website_url)) {
+            $html .= "<span style='text-shadow:0 2px 4px rgba(0,0,0,0.2); white-space:nowrap;'>" . esc_html($website_url) . "</span>";
+        }
+
+        if (!empty($social_links)) {
+            if (!empty($website_url)) {
+                $html .= "<span style='opacity:0.4;'>|</span>";
+            }
+            $html .= "<div style='display:flex; align-items:center; gap:18px;'>";
+            foreach ($social_links as $link) {
+                if (empty($link['text']) && empty($link['custom_img']) && $link['type'] !== 'custom') continue;
+                
+                $html .= "<div style='display:flex; align-items:center; gap:6px;'>";
+                
+                if ($link['type'] === 'custom' && !empty($link['custom_img'])) {
+                    $html .= "<img src='" . esc_url($link['custom_img']) . "' style='width:22px; height:22px; border-radius:4px; object-fit:cover;' crossorigin='anonymous'>";
+                } else {
+                    $html .= "<span style='display:flex; align-items:center;'>";
+                    $html .= $this->mjashik_get_social_icon_svg($link['type'], $footer_color);
+                    $html .= "</span>";
+                }
+
+                if (!empty($link['text'])) {
+                    $html .= "<span style='text-shadow:0 2px 4px rgba(0,0,0,0.2); font-size:" . esc_attr(max(10, $footer_fs - 4)) . "px;'>" . esc_html($link['text']) . "</span>";
+                }
+                
+                $html .= "</div>";
+            }
+            $html .= "</div>";
+        }
+
+        $html .= "
                 </div>
 
             </div>
         </div>";
 
+        echo $html;
     }
 }

@@ -19,6 +19,7 @@ Newspaper Social Media Photo Card allows you to easily generate beautiful, high-
 * **Custom Logo/Watermark**: Upload your logo and set the watermark opacity dynamically.
 * **Background Customization**: Choose a specific background image or use dynamic gradients.
 * **Color Controls**: Full color picker support for text, date badges, title area backgrounds, and footers.
+* **Social Media Badges**: Add multiple social links (Facebook, YouTube, X, Instagram, LinkedIn, or custom images) with text handles to the photo card footer. 
 * **Responsive Layout**: Automatically adjusts font sizing and image scaling depending on the length of your post title.
 * **High Quality PNG**: Downloads high-resolution, responsive PNG images perfect for Facebook, Twitter, and LinkedIn.
 * **Live Admin Preview**: See exactly how your photo card looks right from the plugin settings page.
@@ -47,6 +48,7 @@ Currently, the button appears on standard WordPress "Posts".
 
 = 1.1.0 =
 * Added: Option to select from 20 bundled popular Bangla fonts for the card Title and Date badge. Downloaded seamlessly from local plugin files.
+* Added: Social Media Badges repeater option. Users can now add multiple social media pages/handles along with predefined SVG icons or custom image icons directly to the footer of the generated photo cards.
 
 = 1.0.0 =
 * Initial release.

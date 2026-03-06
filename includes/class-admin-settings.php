@@ -148,6 +148,36 @@ class MJASHIK_NPC_Admin_Settings {
         register_setting('mjashik_npc_settings', 'mjashik_npc_date_font', array(
             'sanitize_callback' => array($this, 'mjashik_sanitize_font'),
         ));
+
+        // Social Links JSON
+        register_setting('mjashik_npc_settings', 'mjashik_npc_social_links', array(
+            'sanitize_callback' => array($this, 'mjashik_sanitize_social_links'),
+        ));
+    }
+
+    /**
+     * Sanitize Social Links JSON
+     */
+    public function mjashik_sanitize_social_links($value) {
+        $decoded = json_decode($value, true);
+        if (!is_array($decoded)) {
+            return '[]';
+        }
+
+        $sanitized = array();
+        foreach ($decoded as $link) {
+            $type = isset($link['type']) ? sanitize_text_field($link['type']) : 'facebook';
+            $text = isset($link['text']) ? sanitize_text_field($link['text']) : '';
+            $custom_img = isset($link['custom_img']) ? esc_url_raw($link['custom_img']) : '';
+            
+            $sanitized[] = array(
+                'type' => $type,
+                'text' => $text,
+                'custom_img' => $custom_img
+            );
+        }
+
+        return json_encode($sanitized);
     }
     
     /**
@@ -163,6 +193,27 @@ class MJASHIK_NPC_Admin_Settings {
     public function mjashik_sanitize_font($value) {
         $allowed = array_keys($this->mjashik_get_font_list());
         return in_array($value, $allowed, true) ? $value : 'SolaimanLipi';
+    }
+    
+    /**
+     * Get SVG code for social icons
+     */
+    public function mjashik_get_social_icon_svg($type, $color = 'currentColor') {
+        $size = '20';
+        $style = 'width:'.$size.'px; height:'.$size.'px; fill:'.$color.';';
+        switch ($type) {
+            case 'facebook':
+                return '<svg style="'.$style.'" viewBox="0 0 24 24"><path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7h-2.54V12h2.54V9.79c0-2.5 1.5-3.89 3.77-3.89 1.1 0 2.23.2 2.23.2v2.45h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.95h-2.33v7C18.34 21.19 22 17.06 22 12.06c0-5.53-4.5-10.02-10-10.02z"/></svg>';
+            case 'twitter':
+                return '<svg style="'.$style.'" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>';
+            case 'instagram':
+                return '<svg style="'.$style.'" viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m8.4 2.4c.54 0 1 .45 1 1 0 .56-.46 1.01-1 1.01s-1-.45-1-1.01c0-.55.46-1 1-1m-4 1.2c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4m0 1.6c-1.32 0-2.4 1.08-2.4 2.4 0 1.32 1.08 2.4 2.4 2.4s2.4-1.08 2.4-2.4c0-1.32-1.08-2.4-2.4-2.4z"/></svg>';
+            case 'youtube':
+                return '<svg style="'.$style.'" viewBox="0 0 24 24"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3z"/></svg>';
+            case 'linkedin':
+                return '<svg style="'.$style.'" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.56c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.66H9.33V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.36-1.85 3.6 0 4.26 2.37 4.26 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM3.55 20.45h3.57V9H3.55v11.45zM22 2H2v20h20V2z"/></svg>';
+        }
+        return '';
     }
     
     /**
@@ -195,6 +246,7 @@ class MJASHIK_NPC_Admin_Settings {
             delete_option('mjashik_npc_watermark_opacity');
             delete_option('mjashik_npc_title_font');
             delete_option('mjashik_npc_date_font');
+            delete_option('mjashik_npc_social_links');
             
             add_settings_error('mjashik_npc_messages', 'mjashik_npc_message', __('Settings restored to default values', 'newspaper-social-media-photo-card'), 'updated');
         }
@@ -527,6 +579,25 @@ class MJASHIK_NPC_Admin_Settings {
                         </td>
                     </tr>
                     
+                    <!-- ============ SOCIAL MEDIA SETTINGS ============ -->
+                    <tr>
+                        <th scope="row" style="padding-top:20px;">
+                            <label><?php esc_html_e('Social Media Badges', 'newspaper-social-media-photo-card'); ?></label>
+                        </th>
+                        <td style="padding-top:20px;">
+                            <!-- Hidden input to store JSON -->
+                            <input type="hidden" id="mjashik_npc_social_links" name="mjashik_npc_social_links" value="<?php echo esc_attr(get_option('mjashik_npc_social_links', '[]')); ?>" />
+                            
+                            <!-- Container where repeating fields will be rendered by JS -->
+                            <div id="mjashik_npc_social_repeater" style="display:flex; flex-direction:column; gap:10px; margin-bottom:15px;"></div>
+                            
+                            <button type="button" class="button" id="mjashik_npc_add_social_link">
+                                <?php esc_html_e('+ Add Social Link', 'newspaper-social-media-photo-card'); ?>
+                            </button>
+                            <p class="description"><?php esc_html_e('Add icons and text to display next to the Website URL in the footer.', 'newspaper-social-media-photo-card'); ?></p>
+                        </td>
+                    </tr>
+                    
                     <tr>
                         <th scope="row">
                             <label for="mjashik_npc_show_download_button"><?php echo esc_html__('Show Download Button (Frontend)', 'newspaper-social-media-photo-card'); ?></label>
@@ -579,6 +650,9 @@ class MJASHIK_NPC_Admin_Settings {
             $prev_website      = get_option('mjashik_npc_website_url', 'www.hostbuybd.com');
             $prev_title_font   = get_option('mjashik_npc_title_font', 'SolaimanLipi');
             $prev_date_font    = get_option('mjashik_npc_date_font', 'SolaimanLipi');
+            $prev_social_raw   = get_option('mjashik_npc_social_links', '[]');
+            $prev_social       = json_decode($prev_social_raw, true);
+            if (!is_array($prev_social)) $prev_social = array();
 
             // Demo values
             $demo_title = 'সুপার ফাস্ট নিউজপেপার হোস্টিং কিনুন HOSTBUY.BD থেকে';
@@ -651,9 +725,40 @@ class MJASHIK_NPC_Admin_Settings {
                             </div>
 
                             <!-- 3. FOOTER — fixed height, custom colors -->
-                            <div style="width:100%; height:<?php echo esc_attr($footer_h); ?>px; background:<?php echo esc_attr($prev_footer_bg); ?>; color:<?php echo esc_attr($prev_footer_color); ?>; display:flex; align-items:center; justify-content:center; font-size:<?php echo esc_attr($prev_footer_size); ?>px; font-weight:600; letter-spacing:1.5px; flex:0 0 <?php echo esc_attr($footer_h); ?>px; position:relative; overflow:hidden;">
+                            <div style="width:100%; height:<?php echo esc_attr($footer_h); ?>px; background:<?php echo esc_attr($prev_footer_bg); ?>; color:<?php echo esc_attr($prev_footer_color); ?>; display:flex; align-items:center; justify-content:center; gap:20px; font-size:<?php echo esc_attr($prev_footer_size); ?>px; font-weight:600; letter-spacing:1px; flex:0 0 <?php echo esc_attr($footer_h); ?>px; position:relative; overflow:hidden;">
                                 <div style="position:absolute; top:0; left:0; width:100%; height:4px; background:rgba(255,255,255,0.1);"></div>
-                                <span style="text-shadow:0 2px 4px rgba(0,0,0,0.2);"><?php echo esc_html($prev_website ?: 'www.hostbuybd.com'); ?></span>
+                                
+                                <!-- Web URL -->
+                                <?php if (!empty($prev_website)): ?>
+                                    <span style="text-shadow:0 2px 4px rgba(0,0,0,0.2); white-space:nowrap;"><?php echo esc_html($prev_website); ?></span>
+                                <?php endif; ?>
+
+                                <!-- Social Links -->
+                                <?php if (!empty($prev_social)): ?>
+                                    <?php if (!empty($prev_website)): ?>
+                                    <span style="opacity:0.4;">|</span>
+                                    <?php endif; ?>
+                                    
+                                    <div style="display:flex; align-items:center; gap:18px;">
+                                        <?php foreach ($prev_social as $link): 
+                                            if (empty($link['text']) && empty($link['custom_img']) && $link['type'] !== 'custom') continue;
+                                        ?>
+                                            <div style="display:flex; align-items:center; gap:6px;">
+                                                <?php if ($link['type'] === 'custom' && !empty($link['custom_img'])): ?>
+                                                    <img src="<?php echo esc_url($link['custom_img']); ?>" style="width:22px; height:22px; border-radius:4px; object-fit:cover;" crossorigin="anonymous">
+                                                <?php else: ?>
+                                                    <span style="display:flex; align-items:center;">
+                                                        <?php echo $this->mjashik_get_social_icon_svg($link['type'], $prev_footer_color); ?>
+                                                    </span>
+                                                <?php endif; ?>
+
+                                                <?php if (!empty($link['text'])): ?>
+                                                    <span style="text-shadow:0 2px 4px rgba(0,0,0,0.2); font-size:<?php echo esc_attr(max(10, $prev_footer_size - 4)); ?>px;"><?php echo esc_html($link['text']); ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
 
                         </div>
