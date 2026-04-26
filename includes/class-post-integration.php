@@ -154,6 +154,7 @@ class MJASHIK_NPC_Post_Integration {
 
     /**
      * Render the Hidden Card in Admin or Frontend Footer
+     * Delegates HTML rendering to the active template's template-card.php
      */
     public function mjashik_render_hidden_card() {
         global $post, $pagenow;
@@ -203,89 +204,25 @@ class MJASHIK_NPC_Post_Integration {
         $card_h   = 800;
         $footer_h = 80;
 
-        $html = "
-        <div id='npc-hidden-container' style='position:absolute; left:-9999px; top:-9999px;'>
-            <div id='npc-card-capture' style='width:{$card_w}px; height:{$card_h}px; position:relative; overflow:hidden; font-family:\"Noto Sans Bengali\",sans-serif; background:#fff; display:flex; flex-direction:column;'>
+        // SVG icon callable — passed into template scope
+        $post_obj = $this;
+        $mjashik_social_icon_fn = function($type, $color) use ($post_obj) {
+            return $post_obj->mjashik_get_social_icon_svg($type, $color);
+        };
 
-                <!-- 1. IMAGE AREA — fills remaining space (flex:1), uses CSS background-image for html2canvas -->
-                <div style='position:relative; width:100%; flex:1 1 auto; min-height:200px; overflow:hidden; "
-                    . ($thumbnail_url
-                        ? "background-image:url(" . esc_url($thumbnail_url) . "); background-size:cover; background-position:center top;"
-                        : "background:linear-gradient(135deg,#dde3ea,#b2bec3);")
-                    . "'>
+        // Bundle vars for the template
+        $card_vars = compact(
+            'logo_url', 'logo_shadow', 'font_color', 'title_area_bg',
+            'date_bg', 'date_color', 'footer_bg', 'footer_color',
+            'date_format', 'website_url', 'title_fs', 'footer_fs',
+            'title_font', 'date_font', 'social_links',
+            'thumbnail_url', 'date', 'title',
+            'card_w', 'card_h', 'footer_h',
+            'mjashik_social_icon_fn'
+        );
 
-                    <!-- Gradient Overlay -->
-                    <div style='position:absolute; bottom:0; left:0; width:100%; height:160px; background:linear-gradient(to top,rgba(0,0,0,0.65),transparent); z-index:10;'></div>
-
-                    <!-- Logo (Top Left) -->
-                    <div style='position:absolute; top:28px; left:28px; z-index:30; filter:drop-shadow(0 2px 6px " . esc_attr($logo_shadow) . ");'>
-                        " . ($logo_url ? "<img src='" . esc_url($logo_url) . "' style='height:auto; width:auto; max-width:240px; display:block;' crossorigin='anonymous'>" : "") . "
-                    </div>
-
-                    <!-- Date Badge (Top Right) -->
-                    <div style='position:absolute; top:28px; right:28px; background:" . esc_attr($date_bg) . "; color:" . esc_attr($date_color) . "; padding:10px 22px; font-weight:bold; font-size:18px; border-radius:50px; box-shadow:0 4px 12px rgba(0,0,0,0.3); z-index:30; border:2px solid rgba(255,255,255,0.6); font-family:" . esc_attr($date_font) . ",sans-serif;'>
-                        " . esc_html($date) . "
-                    </div>
-                </div>
-
-                <!-- 2. TITLE AREA — auto height, custom bg & text color -->
-                <div style='position:relative; width:100%; flex:0 0 auto; border-top:5px solid " . esc_attr($date_bg) . "; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 50px; text-align:center; overflow:hidden; background-color:" . esc_attr($title_area_bg) . ";'>
-
-                    <!-- Watermark logo -->
-                    <div style='position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:" . esc_attr(((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100) . "; width:55%; pointer-events:none; z-index:2;'>
-                        " . ($logo_url ? "<img src='" . esc_url($logo_url) . "' style='width:100%; height:auto;' crossorigin='anonymous'>" : "") . "
-                    </div>
-
-                    <!-- Headline -->
-                    <div style='position:relative; z-index:10; width:100%;'>
-                        <h1 style='margin:0; padding:0; font-size:" . esc_attr($title_fs) . "px; line-height:1.5; font-weight:700; color:" . esc_attr($font_color) . "; width:100%; text-shadow:0 1px 2px rgba(0,0,0,0.06); font-family:" . esc_attr($title_font) . ",sans-serif;'>
-                            " . esc_html($title) . "
-                        </h1>
-                    </div>
-                </div>
-
-                <!-- 3. FOOTER — fixed height -->
-                <div style='width:100%; height:80px; background:" . esc_attr($footer_bg) . "; color:" . esc_attr($footer_color) . "; display:flex; align-items:center; justify-content:center; gap:20px; font-size:" . esc_attr($footer_fs) . "px; font-weight:600; letter-spacing:1px; flex:0 0 80px; position:relative; overflow:hidden;'>
-                    <div style='position:absolute; top:0; left:0; width:100%; height:4px; background:rgba(255,255,255,0.1);'></div>
-                    ";
-
-        if (!empty($website_url)) {
-            $html .= "<span style='text-shadow:0 2px 4px rgba(0,0,0,0.2); white-space:nowrap;'>" . esc_html($website_url) . "</span>";
-        }
-
-        if (!empty($social_links)) {
-            if (!empty($website_url)) {
-                $html .= "<span style='opacity:0.4;'>|</span>";
-            }
-            $html .= "<div style='display:flex; align-items:center; gap:18px;'>";
-            foreach ($social_links as $link) {
-                if (empty($link['text']) && empty($link['custom_img']) && $link['type'] !== 'custom') continue;
-                
-                $html .= "<div style='display:flex; align-items:center; gap:6px;'>";
-                
-                if ($link['type'] === 'custom' && !empty($link['custom_img'])) {
-                    $html .= "<img src='" . esc_url($link['custom_img']) . "' style='width:22px; height:22px; border-radius:4px; object-fit:cover;' crossorigin='anonymous'>";
-                } else {
-                    $html .= "<span style='display:flex; align-items:center;'>";
-                    $html .= $this->mjashik_get_social_icon_svg($link['type'], $footer_color);
-                    $html .= "</span>";
-                }
-
-                if (!empty($link['text'])) {
-                    $html .= "<span style='text-shadow:0 2px 4px rgba(0,0,0,0.2); font-size:" . esc_attr(max(10, $footer_fs - 4)) . "px;'>" . esc_html($link['text']) . "</span>";
-                }
-                
-                $html .= "</div>";
-            }
-            $html .= "</div>";
-        }
-
-        $html .= "
-                </div>
-
-            </div>
-        </div>";
-
-        echo $html;
+        // Load the active template's card file
+        $active_tpl = MJASHIK_NPC_Template_Loader::get_active_template();
+        MJASHIK_NPC_Template_Loader::include_template($active_tpl, 'template-card.php', $card_vars);
     }
 }
