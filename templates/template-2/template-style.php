@@ -18,11 +18,11 @@ if (!defined('ABSPATH')) {
 }
 
 // Layout heights (at 800×800 card scale)
-$t2_title_h       = 265;   // title area
-$t2_separator_h   = 8;     // separator line thickness
-$t2_footer_dark_h = 68;    // dark social/text row
-$t2_footer_url_h  = 52;    // colored URL row
-$t2_badge_half    = 22;    // px by which date badge overlaps (half of badge height approx)
+$t2_title_h       = 265;
+$t2_separator_h   = 8;
+$t2_footer_dark_h = 65;   // black overlay on image
+$t2_footer_url_h  = 90;   // red footer: social + URL
+$t2_badge_half    = 22;
 
 // Color roles (swapped vs Template 1)
 $t2_title_bg       = '#FFF5F5';          // always light cream
@@ -82,45 +82,46 @@ $t2_url_fs         = max(14, $prev_footer_size - 2);
                 <!-- Placeholder -->
                 <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.35); font-size:20px; font-weight:600; padding-bottom:<?php echo esc_attr($t2_footer_dark_h); ?>px;">📷 Post Image</div>
 
-                <!-- ‹‹‹ বিস্তারিত কমেন্টে ››› — black overlay at image bottom -->
-                <div style="position:absolute; bottom:0; left:0; width:100%; height:<?php echo esc_attr($t2_footer_dark_h); ?>px; background:#000000; color:#ffffff; display:flex; align-items:center; justify-content:center; gap:12px; font-size:<?php echo esc_attr($prev_footer_size); ?>px; font-weight:700; letter-spacing:3px; box-sizing:border-box; overflow:hidden;">
-
-                    <span style="opacity:0.7; letter-spacing:1px;">&lsaquo;&lsaquo;&lsaquo;</span>
-
-                    <?php if (!empty($prev_social)): ?>
-                        <div style="display:flex; align-items:center; gap:12px; letter-spacing:1px;">
-                            <?php foreach ($prev_social as $link):
-                                if (empty($link['text']) && empty($link['custom_img']) && $link['type'] !== 'custom') continue;
-                            ?>
-                                <div style="display:flex; align-items:center; gap:5px;">
-                                    <?php if ($link['type'] === 'custom' && !empty($link['custom_img'])): ?>
-                                        <img src="<?php echo esc_url($link['custom_img']); ?>" style="width:22px; height:22px; border-radius:3px; object-fit:cover;" crossorigin="anonymous">
-                                    <?php else: ?>
-                                        <span style="display:flex; align-items:center;">
-                                            <?php echo $mjashik_social_icon_fn($link['type'], '#ffffff'); ?>
-                                        </span>
-                                    <?php endif; ?>
-                                    <?php if (!empty($link['text'])): ?>
-                                        <span style="font-size:<?php echo esc_attr(max(10, $prev_footer_size - 4)); ?>px; letter-spacing:1px;"><?php echo esc_html($link['text']); ?></span>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <span style="letter-spacing:2px;"><?php esc_html_e('বিস্তারিত কমেন্টে', 'newspaper-social-media-photo-card'); ?></span>
-                    <?php endif; ?>
-
-                    <span style="opacity:0.7; letter-spacing:1px;">&rsaquo;&rsaquo;&rsaquo;</span>
+                <!-- ‹‹‹ বিস্তারিত কমেন্টে ››› — FIXED text, black overlay, always centered -->
+                <div style="position:absolute; bottom:0; left:0; width:100%; height:<?php echo esc_attr($t2_footer_dark_h); ?>px; background:#000000; color:#ffffff; display:flex; align-items:center; justify-content:center; gap:10px; font-size:<?php echo esc_attr($prev_footer_size); ?>px; font-weight:700; letter-spacing:3px; box-sizing:border-box; overflow:hidden;">
+                    <span style="opacity:0.7;">&lsaquo;&lsaquo;&lsaquo;</span>
+                    <span style="letter-spacing:2px;"><?php esc_html_e('বিস্তারিত কমেন্টে', 'newspaper-social-media-photo-card'); ?></span>
+                    <span style="opacity:0.7;">&rsaquo;&rsaquo;&rsaquo;</span>
                 </div>
             </div>
 
-            <!-- ═══════════════════════════════════════
-                 4. FOOTER ROW 2 — Brand color, URL
-             ═══════════════════════════════════════ -->
-            <div style="width:100%; flex:0 0 <?php echo esc_attr($t2_footer_url_h); ?>px; height:<?php echo esc_attr($t2_footer_url_h); ?>px; background:<?php echo esc_attr($prev_date_bg); ?>; color:<?php echo esc_attr($prev_date_color); ?>; display:flex; align-items:center; justify-content:center; font-size:<?php echo esc_attr($t2_url_fs); ?>px; font-weight:700; letter-spacing:1px; box-sizing:border-box; overflow:hidden;">
-                <?php if (!empty($prev_website)): ?>
-                    <span style="text-shadow:0 2px 4px rgba(0,0,0,0.2);"><?php echo esc_html($prev_website); ?></span>
+            <!-- RED FOOTER: social links (top) + website URL (bottom) -->
+            <div style="width:100%; flex:0 0 <?php echo esc_attr($t2_footer_url_h); ?>px; height:<?php echo esc_attr($t2_footer_url_h); ?>px; background:<?php echo esc_attr($prev_date_bg); ?>; color:<?php echo esc_attr($prev_date_color); ?>; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; box-sizing:border-box; overflow:hidden; padding:8px 20px;">
+
+                <!-- Social links row -->
+                <?php if (!empty($prev_social)): ?>
+                <div style="display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:nowrap;">
+                    <?php foreach ($prev_social as $link):
+                        if (empty($link['text']) && empty($link['custom_img']) && $link['type'] !== 'custom') continue;
+                    ?>
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <?php if ($link['type'] === 'custom' && !empty($link['custom_img'])): ?>
+                                <img src="<?php echo esc_url($link['custom_img']); ?>" style="width:20px; height:20px; border-radius:3px; object-fit:cover;" crossorigin="anonymous">
+                            <?php else: ?>
+                                <span style="display:flex; align-items:center;">
+                                    <?php echo $mjashik_social_icon_fn($link['type'], $prev_date_color); ?>
+                                </span>
+                            <?php endif; ?>
+                            <?php if (!empty($link['text'])): ?>
+                                <span style="font-size:<?php echo esc_attr(max(12, $prev_footer_size - 6)); ?>px; font-weight:600;"><?php echo esc_html($link['text']); ?></span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
                 <?php endif; ?>
+
+                <!-- Website URL row -->
+                <?php if (!empty($prev_website)): ?>
+                <div style="font-size:<?php echo esc_attr($t2_url_fs); ?>px; font-weight:700; letter-spacing:1px; text-shadow:0 2px 4px rgba(0,0,0,0.2);">
+                    <?php echo esc_html($prev_website); ?>
+                </div>
+                <?php endif; ?>
+
             </div>
 
         </div><!-- /.card -->
