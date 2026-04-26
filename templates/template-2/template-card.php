@@ -65,9 +65,7 @@ $t2_wm_opacity     = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 10
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════
-         2. IMAGE AREA — flex:1 with thumbnail
-     ═══════════════════════════════════════ -->
+    <!-- IMAGE AREA — flex:1 with post thumbnail, black overlay at bottom -->
     <div style='position:relative; width:100%; flex:1 1 auto; overflow:hidden; z-index:1; <?php
         if ($thumbnail_url) {
             echo 'background-image:url(' . esc_url($thumbnail_url) . '); background-size:cover; background-position:center top;';
@@ -75,40 +73,37 @@ $t2_wm_opacity     = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 10
             echo 'background:linear-gradient(135deg,#cdd6e0,#9fb3c8);';
         }
     ?>'>
-        <!-- No overlay needed; date badge comes from title area above -->
-    </div>
 
-    <!-- ═══════════════════════════════════════
-         3. FOOTER ROW 1 — Dark, arrows + social/text
-     ═══════════════════════════════════════ -->
-    <div style='width:100%; flex:0 0 <?php echo esc_attr($t2_footer_dark_h); ?>px; height:<?php echo esc_attr($t2_footer_dark_h); ?>px; background:<?php echo esc_attr($footer_bg); ?>; color:<?php echo esc_attr($footer_color); ?>; display:flex; align-items:center; justify-content:center; gap:12px; font-size:<?php echo esc_attr($footer_fs); ?>px; font-weight:700; letter-spacing:3px; box-sizing:border-box; overflow:hidden;'>
+        <!-- ‹‹‹ বিস্তারিত কমেন্টে ››› — black overlay at image bottom -->
+        <div style='position:absolute; bottom:0; left:0; width:100%; height:<?php echo esc_attr($t2_footer_dark_h); ?>px; background:#000000; color:#ffffff; display:flex; align-items:center; justify-content:center; gap:12px; font-size:<?php echo esc_attr($footer_fs); ?>px; font-weight:700; letter-spacing:3px; box-sizing:border-box; overflow:hidden;'>
 
-        <span style='opacity:0.7; letter-spacing:1px;'>&lsaquo;&lsaquo;&lsaquo;</span>
+            <span style='opacity:0.7; letter-spacing:1px;'>&lsaquo;&lsaquo;&lsaquo;</span>
 
-        <?php if (!empty($social_links)): ?>
-            <div style='display:flex; align-items:center; gap:12px; letter-spacing:1px;'>
-                <?php foreach ($social_links as $link):
-                    if (empty($link['text']) && empty($link['custom_img']) && $link['type'] !== 'custom') continue;
-                ?>
-                    <div style='display:flex; align-items:center; gap:5px;'>
-                        <?php if ($link['type'] === 'custom' && !empty($link['custom_img'])): ?>
-                            <img src='<?php echo esc_url($link['custom_img']); ?>' style='width:22px; height:22px; border-radius:3px; object-fit:cover;' crossorigin='anonymous'>
-                        <?php else: ?>
-                            <span style='display:flex; align-items:center;'>
-                                <?php echo call_user_func($mjashik_social_icon_fn, $link['type'], $footer_color); ?>
-                            </span>
-                        <?php endif; ?>
-                        <?php if (!empty($link['text'])): ?>
-                            <span style='font-size:<?php echo esc_attr(max(10, $footer_fs - 4)); ?>px; letter-spacing:1px;'><?php echo esc_html($link['text']); ?></span>
-                        <?php endif; ?>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        <?php else: ?>
-            <span style='letter-spacing:2px;'><?php echo esc_html(__('বিস্তারিত কমেন্টে', 'newspaper-social-media-photo-card')); ?></span>
-        <?php endif; ?>
+            <?php if (!empty($social_links)): ?>
+                <div style='display:flex; align-items:center; gap:12px; letter-spacing:1px;'>
+                    <?php foreach ($social_links as $link):
+                        if (empty($link['text']) && empty($link['custom_img']) && $link['type'] !== 'custom') continue;
+                    ?>
+                        <div style='display:flex; align-items:center; gap:5px;'>
+                            <?php if ($link['type'] === 'custom' && !empty($link['custom_img'])): ?>
+                                <img src='<?php echo esc_url($link['custom_img']); ?>' style='width:22px; height:22px; border-radius:3px; object-fit:cover;' crossorigin='anonymous'>
+                            <?php else: ?>
+                                <span style='display:flex; align-items:center;'>
+                                    <?php echo call_user_func($mjashik_social_icon_fn, $link['type'], '#ffffff'); ?>
+                                </span>
+                            <?php endif; ?>
+                            <?php if (!empty($link['text'])): ?>
+                                <span style='font-size:<?php echo esc_attr(max(10, $footer_fs - 4)); ?>px; letter-spacing:1px;'><?php echo esc_html($link['text']); ?></span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <span style='letter-spacing:2px;'><?php echo esc_html(__('বিস্তারিত কমেন্টে', 'newspaper-social-media-photo-card')); ?></span>
+            <?php endif; ?>
 
-        <span style='opacity:0.7; letter-spacing:1px;'>&rsaquo;&rsaquo;&rsaquo;</span>
+            <span style='opacity:0.7; letter-spacing:1px;'>&rsaquo;&rsaquo;&rsaquo;</span>
+        </div>
     </div>
 
     <!-- ═══════════════════════════════════════
