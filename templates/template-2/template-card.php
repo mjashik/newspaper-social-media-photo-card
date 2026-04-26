@@ -2,67 +2,68 @@
 /**
  * Template 2 – Hidden Card HTML for html2canvas download (Kalbela Style)
  *
- * Layout:
- *  [TITLE AREA]  — colored bg, large bold text, logo top-right circle, watermark
- *  [DATE BADGE]  — centered pill overlapping title/image border
- *  [IMAGE AREA]  — flex:1 with post thumbnail
- *  [FOOTER ROW1] — dark bg (footer_bg), social links with decorative arrows
- *  [FOOTER ROW2] — colored bg (date_bg), website URL
- *
- * Variables available via extract():
- *  $logo_url, $logo_shadow, $font_color, $title_area_bg,
- *  $date_bg, $date_color, $footer_bg, $footer_color,
- *  $date_format, $website_url, $title_fs, $footer_fs,
- *  $title_font, $date_font, $social_links,
- *  $thumbnail_url, $date, $title,
- *  $card_w, $card_h, $footer_h,
- *  $mjashik_social_icon_fn
+ * Color Role Mapping (different from Template 1):
+ *  Title BG      → fixed light cream (#FFF5F5)
+ *  Title Text    → $title_area_bg  (brand/primary color e.g. red)
+ *  Logo Circle   → $date_bg        (brand color solid bg)
+ *  Separator     → $date_bg        (5px bottom border on title)
+ *  Date Badge    → $date_bg bg, $date_color text
+ *  Footer Dark   → $footer_bg bg,  $footer_color text
+ *  Footer URL    → $date_bg bg,    $date_color text
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-// Template 2 specific heights
-$t2_title_h       = 270;
-$t2_date_overlap  = 28;
+// Template 2 layout heights
+$t2_title_h       = 280;
 $t2_footer_dark_h = 65;
-$t2_footer_url_h  = 55;
-$t2_url_fs        = max(14, $footer_fs - 4);
-$t2_wm_opacity    = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100;
+$t2_footer_url_h  = 52;
+
+// Color role mapping
+$t2_title_bg        = '#FFF5F5';      // fixed light cream for title area
+$t2_title_text      = $title_area_bg; // brand color used for title text
+$t2_separator_color = $date_bg;       // separator line color
+$t2_logo_circle_bg  = $date_bg;       // logo circle background
+$t2_url_fs          = max(14, $footer_fs - 2);
+
+// Watermark opacity
+$t2_wm_opacity = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100;
 ?>
 <div id='npc-hidden-container' style='position:absolute; left:-9999px; top:-9999px;'>
 <div id='npc-card-capture' style='width:<?php echo esc_attr($card_w); ?>px; height:<?php echo esc_attr($card_h); ?>px; position:relative; overflow:hidden; font-family:"Noto Sans Bengali",sans-serif; background:#fff; display:flex; flex-direction:column;'>
 
     <!-- ═══════════════════════════════════════
-         1. TITLE AREA (top, fixed height)
+         1. TITLE AREA — light bg, brand-colored text
      ═══════════════════════════════════════ -->
-    <div style='position:relative; width:100%; flex:0 0 <?php echo esc_attr($t2_title_h); ?>px; height:<?php echo esc_attr($t2_title_h); ?>px; background:<?php echo esc_attr($title_area_bg); ?>; overflow:hidden; box-sizing:border-box; padding:30px 38px 30px 38px;'>
+    <div style='position:relative; width:100%; flex:0 0 <?php echo esc_attr($t2_title_h); ?>px; height:<?php echo esc_attr($t2_title_h); ?>px; background:<?php echo esc_attr($t2_title_bg); ?>; overflow:hidden; box-sizing:border-box; padding:28px 38px 28px 38px; border-bottom:5px solid <?php echo esc_attr($t2_separator_color); ?>;'>
 
-        <!-- Watermark (centered in title area) -->
+        <!-- Watermark (faint, centered in title area) -->
         <?php if ($logo_url): ?>
-        <div style='position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:<?php echo esc_attr($t2_wm_opacity); ?>; width:70%; z-index:1; pointer-events:none;'>
+        <div style='position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:<?php echo esc_attr($t2_wm_opacity); ?>; width:60%; z-index:1; pointer-events:none;'>
             <img src='<?php echo esc_url($logo_url); ?>' style='width:100%; height:auto;' crossorigin='anonymous'>
         </div>
         <?php endif; ?>
 
         <!-- Logo — top-right circle badge -->
         <?php if ($logo_url): ?>
-        <div style='position:absolute; top:18px; right:18px; width:88px; height:88px; background:<?php echo esc_attr($date_bg); ?>; border-radius:50%; border:4px solid #ffffff; box-shadow:0 4px 12px rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; overflow:hidden; z-index:20; box-sizing:border-box;'>
-            <img id='npc-logo-img' data-shadow='<?php echo esc_attr($logo_shadow); ?>' src='<?php echo esc_url($logo_url); ?>' style='width:75%; height:75%; object-fit:contain; display:block;' crossorigin='anonymous'>
+        <div style='position:absolute; top:16px; right:16px; width:92px; height:92px; background:<?php echo esc_attr($t2_logo_circle_bg); ?>; border-radius:50%; border:4px solid #ffffff; box-shadow:0 4px 14px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; overflow:hidden; z-index:20; box-sizing:border-box;'>
+            <img id='npc-logo-img' data-shadow='<?php echo esc_attr($logo_shadow); ?>' src='<?php echo esc_url($logo_url); ?>' style='width:72%; height:72%; object-fit:contain; display:block;' crossorigin='anonymous'>
         </div>
         <?php endif; ?>
 
-        <!-- Headline text -->
-        <div style='position:relative; z-index:10; width:calc(100% - 110px);'>
-            <h1 style='margin:0; padding:0; font-size:<?php echo esc_attr($title_fs); ?>px; line-height:1.45; font-weight:800; color:<?php echo esc_attr($font_color); ?>; font-family:<?php echo esc_attr($title_font); ?>,sans-serif; word-break:break-word;'>
+        <!-- Headline — brand color bold text, centered -->
+        <div style='position:relative; z-index:10; width:calc(100% - 116px); height:100%; display:flex; align-items:center; justify-content:center;'>
+            <h1 style='margin:0; padding:0; font-size:<?php echo esc_attr($title_fs); ?>px; line-height:1.45; font-weight:800; color:<?php echo esc_attr($t2_title_text); ?>; font-family:<?php echo esc_attr($title_font); ?>,sans-serif; word-break:break-word; text-align:center; width:100%;'>
                 <?php echo esc_html($title); ?>
             </h1>
         </div>
     </div>
 
-
-    <!-- IMAGE AREA (flex:1 fills remaining) -->
+    <!-- ═══════════════════════════════════════
+         2. IMAGE AREA — flex:1, post thumbnail
+     ═══════════════════════════════════════ -->
     <div style='position:relative; width:100%; flex:1 1 auto; overflow:hidden; <?php
         if ($thumbnail_url) {
             echo 'background-image:url(' . esc_url($thumbnail_url) . '); background-size:cover; background-position:center top;';
@@ -70,24 +71,20 @@ $t2_wm_opacity    = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100
             echo 'background:linear-gradient(135deg,#dde3ea,#b2bec3);';
         }
     ?>'>
-        <!-- Date badge — top center of image area -->
-        <div style='position:absolute; top:18px; left:50%; transform:translateX(-50%); background:<?php echo esc_attr($date_bg); ?>; color:<?php echo esc_attr($date_color); ?>; padding:8px 34px; font-size:20px; font-weight:700; border-radius:50px; box-shadow:0 4px 14px rgba(0,0,0,0.28); z-index:30; white-space:nowrap; font-family:<?php echo esc_attr($date_font); ?>,sans-serif;'>
+        <!-- Date badge — top center of image -->
+        <div style='position:absolute; top:12px; left:50%; transform:translateX(-50%); background:<?php echo esc_attr($date_bg); ?>; color:<?php echo esc_attr($date_color); ?>; padding:8px 36px; font-size:20px; font-weight:700; border-radius:50px; box-shadow:0 4px 14px rgba(0,0,0,0.30); z-index:30; white-space:nowrap; font-family:<?php echo esc_attr($date_font); ?>,sans-serif;'>
             <?php echo esc_html($date); ?>
         </div>
-
-        <!-- Subtle top fade -->
-        <div style='position:absolute; top:0; left:0; width:100%; height:50px; background:linear-gradient(to bottom,rgba(0,0,0,0.08),transparent); z-index:5;'></div>
     </div>
 
     <!-- ═══════════════════════════════════════
-         3. FOOTER ROW 1 — Dark bg, social links
+         3. FOOTER ROW 1 — Dark, social + decorative arrows
      ═══════════════════════════════════════ -->
-    <div style='width:100%; flex:0 0 <?php echo esc_attr($t2_footer_dark_h); ?>px; height:<?php echo esc_attr($t2_footer_dark_h); ?>px; background:<?php echo esc_attr($footer_bg); ?>; color:<?php echo esc_attr($footer_color); ?>; display:flex; align-items:center; justify-content:center; gap:16px; font-size:<?php echo esc_attr($footer_fs); ?>px; font-weight:700; letter-spacing:2px; box-sizing:border-box; overflow:hidden;'>
+    <div style='width:100%; flex:0 0 <?php echo esc_attr($t2_footer_dark_h); ?>px; height:<?php echo esc_attr($t2_footer_dark_h); ?>px; background:<?php echo esc_attr($footer_bg); ?>; color:<?php echo esc_attr($footer_color); ?>; display:flex; align-items:center; justify-content:center; gap:14px; font-size:<?php echo esc_attr($footer_fs); ?>px; font-weight:700; letter-spacing:2px; box-sizing:border-box; overflow:hidden;'>
+
+        <span style='opacity:0.65; font-size:<?php echo esc_attr($footer_fs - 2); ?>px;'>❮❮❮</span>
 
         <?php if (!empty($social_links)): ?>
-
-            <span style='opacity:0.6; font-size:<?php echo esc_attr($footer_fs - 2); ?>px;'>❮❮❮</span>
-
             <div style='display:flex; align-items:center; gap:14px;'>
                 <?php foreach ($social_links as $link):
                     if (empty($link['text']) && empty($link['custom_img']) && $link['type'] !== 'custom') continue;
@@ -106,19 +103,15 @@ $t2_wm_opacity    = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100
                     </div>
                 <?php endforeach; ?>
             </div>
-
-            <span style='opacity:0.6; font-size:<?php echo esc_attr($footer_fs - 2); ?>px;'>❯❯❯</span>
-
         <?php else: ?>
-            <span style='opacity:0.6; font-size:<?php echo esc_attr($footer_fs - 2); ?>px;'>❮❮❮</span>
-            <span><?php echo esc_html(!empty($website_url) ? $website_url : 'বিস্তারিত কমেন্টে'); ?></span>
-            <span style='opacity:0.6; font-size:<?php echo esc_attr($footer_fs - 2); ?>px;'>❯❯❯</span>
+            <span><?php echo esc_html(__('বিস্তারিত কমেন্টে', 'newspaper-social-media-photo-card')); ?></span>
         <?php endif; ?>
 
+        <span style='opacity:0.65; font-size:<?php echo esc_attr($footer_fs - 2); ?>px;'>❯❯❯</span>
     </div>
 
     <!-- ═══════════════════════════════════════
-         4. FOOTER ROW 2 — Colored, website URL
+         4. FOOTER ROW 2 — Brand color, website URL
      ═══════════════════════════════════════ -->
     <div style='width:100%; flex:0 0 <?php echo esc_attr($t2_footer_url_h); ?>px; height:<?php echo esc_attr($t2_footer_url_h); ?>px; background:<?php echo esc_attr($date_bg); ?>; color:<?php echo esc_attr($date_color); ?>; display:flex; align-items:center; justify-content:center; font-size:<?php echo esc_attr($t2_url_fs); ?>px; font-weight:700; letter-spacing:1px; box-sizing:border-box; overflow:hidden;'>
         <?php if (!empty($website_url)): ?>
