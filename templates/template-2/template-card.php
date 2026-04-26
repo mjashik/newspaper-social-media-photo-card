@@ -37,7 +37,7 @@ $t2_wm_opacity    = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100
     <!-- ═══════════════════════════════════════
          1. TITLE AREA (top, fixed height)
      ═══════════════════════════════════════ -->
-    <div style='position:relative; width:100%; flex:0 0 <?php echo esc_attr($t2_title_h); ?>px; height:<?php echo esc_attr($t2_title_h); ?>px; background:<?php echo esc_attr($title_area_bg); ?>; overflow:hidden; box-sizing:border-box; padding:30px 38px 50px 38px;'>
+    <div style='position:relative; width:100%; flex:0 0 <?php echo esc_attr($t2_title_h); ?>px; height:<?php echo esc_attr($t2_title_h); ?>px; background:<?php echo esc_attr($title_area_bg); ?>; overflow:hidden; box-sizing:border-box; padding:30px 38px 30px 38px;'>
 
         <!-- Watermark (centered in title area) -->
         <?php if ($logo_url): ?>
@@ -59,16 +59,10 @@ $t2_wm_opacity    = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100
                 <?php echo esc_html($title); ?>
             </h1>
         </div>
-
-        <!-- Date badge — centered, overlapping bottom edge -->
-        <div style='position:absolute; bottom:-<?php echo esc_attr($t2_date_overlap); ?>px; left:50%; transform:translateX(-50%); background:<?php echo esc_attr($date_bg); ?>; color:<?php echo esc_attr($date_color); ?>; padding:8px 34px; font-size:20px; font-weight:700; border-radius:50px; box-shadow:0 4px 14px rgba(0,0,0,0.28); z-index:30; white-space:nowrap; font-family:<?php echo esc_attr($date_font); ?>,sans-serif;'>
-            <?php echo esc_html($date); ?>
-        </div>
     </div>
 
-    <!-- ═══════════════════════════════════════
-         2. IMAGE AREA (flex:1 fills remaining)
-     ═══════════════════════════════════════ -->
+
+    <!-- IMAGE AREA (flex:1 fills remaining) -->
     <div style='position:relative; width:100%; flex:1 1 auto; overflow:hidden; <?php
         if ($thumbnail_url) {
             echo 'background-image:url(' . esc_url($thumbnail_url) . '); background-size:cover; background-position:center top;';
@@ -76,7 +70,12 @@ $t2_wm_opacity    = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100
             echo 'background:linear-gradient(135deg,#dde3ea,#b2bec3);';
         }
     ?>'>
-        <!-- Subtle top fade to blend date badge -->
+        <!-- Date badge — top center of image area -->
+        <div style='position:absolute; top:18px; left:50%; transform:translateX(-50%); background:<?php echo esc_attr($date_bg); ?>; color:<?php echo esc_attr($date_color); ?>; padding:8px 34px; font-size:20px; font-weight:700; border-radius:50px; box-shadow:0 4px 14px rgba(0,0,0,0.28); z-index:30; white-space:nowrap; font-family:<?php echo esc_attr($date_font); ?>,sans-serif;'>
+            <?php echo esc_html($date); ?>
+        </div>
+
+        <!-- Subtle top fade -->
         <div style='position:absolute; top:0; left:0; width:100%; height:50px; background:linear-gradient(to bottom,rgba(0,0,0,0.08),transparent); z-index:5;'></div>
     </div>
 

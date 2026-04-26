@@ -44,7 +44,7 @@ $t2_url_fs = max(14, $prev_footer_size - 4);
             <!-- ═══════════════════════════════════════
                  1. TITLE AREA (top, fixed height)
              ═══════════════════════════════════════ -->
-            <div style="position:relative; width:100%; flex:0 0 <?php echo esc_attr($t2_title_h); ?>px; height:<?php echo esc_attr($t2_title_h); ?>px; background:<?php echo esc_attr($prev_title_bg); ?>; overflow:hidden; box-sizing:border-box; padding:30px 38px 50px 38px;">
+            <div style="position:relative; width:100%; flex:0 0 <?php echo esc_attr($t2_title_h); ?>px; height:<?php echo esc_attr($t2_title_h); ?>px; background:<?php echo esc_attr($prev_title_bg); ?>; overflow:hidden; box-sizing:border-box; padding:30px 38px 30px 38px;">
 
                 <!-- Watermark logo (centered in title area) -->
                 <?php if ($prev_logo): ?>
@@ -68,18 +68,17 @@ $t2_url_fs = max(14, $prev_footer_size - 4);
                         <?php echo esc_html($demo_title); ?>
                     </h1>
                 </div>
-
-                <!-- Date badge — centered, overlapping bottom edge -->
-                <div style="position:absolute; bottom:-<?php echo esc_attr($t2_date_overlap); ?>px; left:50%; transform:translateX(-50%); background:<?php echo esc_attr($prev_date_bg); ?>; color:<?php echo esc_attr($prev_date_color); ?>; padding:8px 34px; font-size:<?php echo esc_attr($prev_date_size); ?>px; font-weight:700; border-radius:50px; box-shadow:0 4px 14px rgba(0,0,0,0.28); z-index:30; white-space:nowrap; font-family:<?php echo esc_attr($prev_date_font); ?>,sans-serif;">
-                    <?php echo esc_html($demo_date); ?>
-                </div>
             </div>
 
-            <!-- ═══════════════════════════════════════
-                 2. IMAGE AREA (flex:1, fills remaining)
-             ═══════════════════════════════════════ -->
+            <!-- IMAGE AREA (flex:1, fills remaining) -->
             <div style="position:relative; width:100%; flex:1 1 auto; overflow:hidden; background:linear-gradient(135deg,#dde3ea 0%,#b2bec3 100%);">
-                <!-- Placeholder text in preview (no real image in admin preview) -->
+
+                <!-- Date badge — top center of image area -->
+                <div style="position:absolute; top:18px; left:50%; transform:translateX(-50%); background:<?php echo esc_attr($prev_date_bg); ?>; color:<?php echo esc_attr($prev_date_color); ?>; padding:8px 34px; font-size:<?php echo esc_attr($prev_date_size); ?>px; font-weight:700; border-radius:50px; box-shadow:0 4px 14px rgba(0,0,0,0.28); z-index:30; white-space:nowrap; font-family:<?php echo esc_attr($prev_date_font); ?>,sans-serif;">
+                    <?php echo esc_html($demo_date); ?>
+                </div>
+
+                <!-- Placeholder text in preview -->
                 <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(0,0,0,0.15); font-size:22px; font-weight:600; letter-spacing:1px;">📷 Post Image</div>
             </div>
 
