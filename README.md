@@ -131,6 +131,15 @@ This plugin is licensed under the GPL v2 or later.
 
 ## Changelog
 
+### Version 1.2.0
+- Added: New template system with multiple professional photo card designs (Template 1 & Template 2).
+- Added: Dynamic line-colorization for multi-line titles without breaking tags.
+- Fixed: Frontend CSS isolation issues ensuring identical rendering between admin and frontend.
+
+### Version 1.1.0
+- Added: Option to select from 20 bundled popular Bangla fonts.
+- Added: Social Media Badges repeater option with SVG or custom image icons.
+
 ### Version 1.0.0
 - Initial release
 - Photo card generation with Bengali text support
