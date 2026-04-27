@@ -1,0 +1,206 @@
+/**
+ * Bangla Web Fonts - Local @font-face declarations
+ * Fonts bundled inside the plugin for offline use.
+ * Source: https://github.com/maateen/bangla-web-fonts (GPL-2.0 licensed)
+ */
+
+/* SolaimanLipi */
+@font-face {
+    font-family: 'SolaimanLipi';
+    src: url('../fonts/solaimanlipi-normal-v1.0.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'SolaimanLipi';
+    src: url('../fonts/solaimanlipi-bold-v1.0.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Nikosh */
+@font-face {
+    font-family: 'Nikosh';
+    src: url('../fonts/nikosh-v1.0.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* SiyamRupali */
+@font-face {
+    font-family: 'SiyamRupali';
+    src: url('../fonts/siyam-rupali-v1.070.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Kalpurush */
+@font-face {
+    font-family: 'Kalpurush';
+    src: url('../fonts/Kalpurush-v0.258.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Mukti */
+@font-face {
+    font-family: 'Mukti';
+    src: url('../fonts/mukti-v3.4.3.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Mukti';
+    src: url('../fonts/muktibold-v3.4.3.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* AdorshoLipi */
+@font-face {
+    font-family: 'AdorshoLipi';
+    src: url('../fonts/adorsho-lipi-v1.0.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* AponaLohit */
+@font-face {
+    font-family: 'AponaLohit';
+    src: url('../fonts/apona-lohit-v1.01.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Baloo Da 2 */
+@font-face {
+    font-family: 'BalooDa2';
+    src: url('../fonts/baloo-da-2.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Bensen */
+@font-face {
+    font-family: 'Bensen';
+    src: url('../fonts/bensen-v1.0.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Bensen Handwriting */
+@font-face {
+    font-family: 'BensenHandwriting';
+    src: url('../fonts/bensen-handwriting-v1.0.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Charu Chandan */
+@font-face {
+    font-family: 'CharuChandan';
+    src: url('../fonts/charu-chandan-v2.20.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Charu Chandan 3D */
+@font-face {
+    font-family: 'CharuChandan3D';
+    src: url('../fonts/charu-chandan-3d-v1.10.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Charu Chandan Hard Stroke */
+@font-face {
+    font-family: 'CharuChandanHardStroke';
+    src: url('../fonts/charu-chandan-hard-stroke-v2.0.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Charukola Ultra Light */
+@font-face {
+    font-family: 'CharukolaUltraLight';
+    src: url('../fonts/charukola-ultra-light-v1.20.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Ekushey Lohit */
+@font-face {
+    font-family: 'EkusheyLohit';
+    src: url('../fonts/ekushey-lohit-v2.0.1.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Lohit Bengali */
+@font-face {
+    font-family: 'LohitBengali';
+    src: url('../fonts/lohit-bengali-v2.5.1.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Noto Serif Bengali */
+@font-face {
+    font-family: 'NotoSerifBengali';
+    src: url('../fonts/noto-serif-bengali-regular-v2.003.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'NotoSerifBengali';
+    src: url('../fonts/noto-serif-bengali-bold-v2.003.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Tiro Bangla */
+@font-face {
+    font-family: 'TiroBangla';
+    src: url('../fonts/tiro-bangla-regular-v1.60.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Vrinda */
+@font-face {
+    font-family: 'Vrinda';
+    src: url('../fonts/vrinda.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Bangla */
+@font-face {
+    font-family: 'BanglaFont';
+    src: url('../fonts/bangla.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}

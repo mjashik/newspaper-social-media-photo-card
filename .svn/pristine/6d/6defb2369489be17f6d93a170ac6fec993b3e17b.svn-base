@@ -1,0 +1,26 @@
+Add-Type -AssemblyName System.Drawing
+
+function Resize-Image {
+    param([string]$in, [string]$out, [int]$w, [int]$h)
+    $img = [System.Drawing.Image]::FromFile($in)
+    
+    $bmp = New-Object System.Drawing.Bitmap $w, $h
+    $g = [System.Drawing.Graphics]::FromImage($bmp)
+    $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+    $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+    $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+    
+    $srcRect = New-Object System.Drawing.Rectangle 0, 0, $img.Width, $img.Height
+    $destRect = New-Object System.Drawing.Rectangle 0, 0, $w, $h
+    
+    $g.DrawImage($img, $destRect, $srcRect, [System.Drawing.GraphicsUnit]::Pixel)
+    
+    $bmp.Save($out, [System.Drawing.Imaging.ImageFormat]::Png)
+    $g.Dispose()
+    $bmp.Dispose()
+    $img.Dispose()
+}
+
+$assetsDir = "e:\laragon\www\wp\wp-content\plugins\newspaper-social-media-photo-card\wp-assets-svn"
+Resize-Image -in "$assetsDir\banner-1544x500.png" -out "$assetsDir\banner-772x250.png" -w 772 -h 250
+Resize-Image -in "$assetsDir\icon-256x256.png" -out "$assetsDir\icon-128x128.png" -w 128 -h 128
