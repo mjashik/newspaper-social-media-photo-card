@@ -47,19 +47,33 @@ class MJASHIK_NPC_Post_Integration {
                 array('mjashik-npc-bangla-fonts'),
                 MJASHIK_NPC_VERSION
             );
-            
+
+            // ── Template-specific card.js (must load BEFORE admin.js) ──
+            $active_tpl    = MJASHIK_NPC_Template_Loader::get_active_template();
+            $template_card_js = MJASHIK_NPC_Template_Loader::get_template_file($active_tpl, 'card.js');
+            if ($template_card_js) {
+                wp_enqueue_script(
+                    'mjashik-npc-template-card-js',
+                    MJASHIK_NPC_PLUGIN_URL . 'templates/' . $active_tpl . '/card.js',
+                    array('html2canvas'),
+                    MJASHIK_NPC_VERSION,
+                    true
+                );
+            }
+
+            // ── Core admin.js (depends on template card.js being registered first) ──
             wp_enqueue_script(
                 'mjashik-npc-admin-js',
                 MJASHIK_NPC_PLUGIN_URL . 'assets/js/admin.js',
-                array('jquery', 'html2canvas'),
+                array('jquery', 'html2canvas', 'mjashik-npc-template-card-js'),
                 MJASHIK_NPC_VERSION,
                 true
             );
             
             wp_localize_script('mjashik-npc-admin-js', 'mjashik_npc_data', array(
-                'post_id' => isset($post) ? $post->ID : 0,
+                'post_id'         => isset($post) ? $post->ID : 0,
                 'generating_text' => __('Generating...', 'newspaper-social-media-photo-card'),
-                'download_text' => __('Download Photo Card', 'newspaper-social-media-photo-card'),
+                'download_text'   => __('Download Photo Card', 'newspaper-social-media-photo-card'),
             ));
         }
     }
@@ -91,18 +105,29 @@ class MJASHIK_NPC_Post_Integration {
             global $post;
             wp_enqueue_script('html2canvas', MJASHIK_NPC_PLUGIN_URL . 'assets/js/html2canvas.min.js', [], '1.4.1', true);
             
-            // Enqueue dashicons for the button icon (usually only loaded for logged-in users)
             wp_enqueue_style('dashicons');
-
             wp_enqueue_style('mjashik-npc-bangla-fonts', MJASHIK_NPC_PLUGIN_URL . 'assets/css/bangla-fonts.css', array(), MJASHIK_NPC_VERSION);
-
-            // Reusing admin CSS/JS for the card rendering and button functionality
             wp_enqueue_style('mjashik-npc-admin-css', MJASHIK_NPC_PLUGIN_URL . 'assets/css/admin.css', array('mjashik-npc-bangla-fonts'), MJASHIK_NPC_VERSION);
-            wp_enqueue_script('mjashik-npc-admin-js', MJASHIK_NPC_PLUGIN_URL . 'assets/js/admin.js', array('jquery', 'html2canvas'), MJASHIK_NPC_VERSION, true);
+
+            // ── Template-specific card.js (must load BEFORE admin.js) ──
+            $active_tpl       = MJASHIK_NPC_Template_Loader::get_active_template();
+            $template_card_js = MJASHIK_NPC_Template_Loader::get_template_file($active_tpl, 'card.js');
+            if ($template_card_js) {
+                wp_enqueue_script(
+                    'mjashik-npc-template-card-js',
+                    MJASHIK_NPC_PLUGIN_URL . 'templates/' . $active_tpl . '/card.js',
+                    array('html2canvas'),
+                    MJASHIK_NPC_VERSION,
+                    true
+                );
+            }
+
+            // ── Core admin.js ──
+            wp_enqueue_script('mjashik-npc-admin-js', MJASHIK_NPC_PLUGIN_URL . 'assets/js/admin.js', array('jquery', 'html2canvas', 'mjashik-npc-template-card-js'), MJASHIK_NPC_VERSION, true);
             wp_localize_script('mjashik-npc-admin-js', 'mjashik_npc_data', array(
-                'post_id' => isset($post) ? $post->ID : 0,
+                'post_id'         => isset($post) ? $post->ID : 0,
                 'generating_text' => esc_html__('Generating...', 'newspaper-social-media-photo-card'),
-                'download_text' => esc_html__('Download Photo Card', 'newspaper-social-media-photo-card'),
+                'download_text'   => esc_html__('Download Photo Card', 'newspaper-social-media-photo-card'),
             ));
         }
     }

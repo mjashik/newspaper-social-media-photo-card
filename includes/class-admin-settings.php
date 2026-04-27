@@ -691,7 +691,7 @@ class MJASHIK_NPC_Admin_Settings {
             $prev_wm_opacity   = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100;
 
             // Demo values — these never change regardless of template
-            $demo_title = 'সুপার ফাস্ট নিউজপেপার হোস্টিং কিনুন HOSTBUY.BD থেকে';
+            $demo_title = 'ছবিতে চালু হলো | অনলাইন পেমেন্ট সিস্টেম';
             $demo_date  = date_i18n($prev_date_fmt, current_time('timestamp'));
 
             // Scale: render card at 800×800 then CSS-scale to 400×400
