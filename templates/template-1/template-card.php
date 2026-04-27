@@ -34,7 +34,7 @@ if (!defined('ABSPATH')) {
             <!-- Logo (Top Left) -->
             <div style='position:absolute; top:28px; left:28px; z-index:30; display:inline-flex; align-items:center; justify-content:center;'>
                 <?php if ($logo_url): ?>
-                    <img src='<?php echo esc_url($logo_url); ?>' id='npc-logo-img' data-shadow='<?php echo esc_attr($logo_shadow); ?>' style='height:auto; width:auto; max-width:240px; display:block; filter:drop-shadow(0 0 20px <?php echo esc_attr($logo_shadow); ?>) drop-shadow(0 0 10px <?php echo esc_attr($logo_shadow); ?>);' crossorigin='anonymous'>
+                    <img src='<?php echo esc_url($logo_url); ?>' id='npc-logo-img' data-shadow='<?php echo esc_attr($logo_shadow); ?>' style='height:auto; width:auto; max-width:240px; display:block; filter:drop-shadow(0 0 30px <?php echo esc_attr($logo_shadow); ?>) drop-shadow(0 0 20px <?php echo esc_attr($logo_shadow); ?>) drop-shadow(0 0 10px <?php echo esc_attr($logo_shadow); ?>);' crossorigin='anonymous'>
                 <?php endif; ?>
             </div>
 

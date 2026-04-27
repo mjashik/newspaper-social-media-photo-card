@@ -37,7 +37,7 @@ $title_bg_style = 'background-color:' . esc_attr($prev_title_bg) . ';';
                 <!-- Logo (Top Left) -->
                 <div style="position:absolute; top:28px; left:28px; z-index:30; display:inline-flex; align-items:center; justify-content:center;">
                     <?php if ($prev_logo): ?>
-                        <img id="npc-logo-img" data-shadow="<?php echo esc_attr($prev_logo_shadow); ?>" src="<?php echo esc_url($prev_logo); ?>" style="height:auto; width:auto; max-width:240px; display:block; filter:drop-shadow(0 0 20px <?php echo esc_attr($prev_logo_shadow); ?>) drop-shadow(0 0 10px <?php echo esc_attr($prev_logo_shadow); ?>);" crossorigin="anonymous">
+                        <img id="npc-logo-img" data-shadow="<?php echo esc_attr($prev_logo_shadow); ?>" src="<?php echo esc_url($prev_logo); ?>" style="height:auto; width:auto; max-width:240px; display:block; filter:drop-shadow(0 0 30px <?php echo esc_attr($prev_logo_shadow); ?>) drop-shadow(0 0 20px <?php echo esc_attr($prev_logo_shadow); ?>) drop-shadow(0 0 10px <?php echo esc_attr($prev_logo_shadow); ?>);" crossorigin="anonymous">
                     <?php else: ?>
                         <div style="background:rgba(255,255,255,0.9); color:#2c3e50; padding:8px 18px; font-size:24px; font-weight:700; border-radius:4px;">YOUR LOGO</div>
                     <?php endif; ?>

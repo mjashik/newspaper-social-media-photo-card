@@ -33,8 +33,8 @@
             if (!renderW) renderW = 200;
 
             var scale    = 4;
-            var dropBlur = 100; // strong glow on all 4 sides
-            var pad      = 60;  // padding so shadow isn't clipped
+            var dropBlur = 150; // much stronger glow (increased by 50%)
+            var pad      = 80;  // more padding so larger shadow isn't clipped
 
             var canvas = document.createElement('canvas');
             canvas.width  = (renderW + pad * 2) * scale;
@@ -48,7 +48,9 @@
             ctx.shadowOffsetY = 0;
 
             try {
-                // Draw 3× to stack/intensify the glow
+                // Draw 5× to stack/intensify the glow (was 3x)
+                ctx.drawImage(logoImg, pad, pad, renderW, renderH);
+                ctx.drawImage(logoImg, pad, pad, renderW, renderH);
                 ctx.drawImage(logoImg, pad, pad, renderW, renderH);
                 ctx.drawImage(logoImg, pad, pad, renderW, renderH);
                 ctx.drawImage(logoImg, pad, pad, renderW, renderH);
