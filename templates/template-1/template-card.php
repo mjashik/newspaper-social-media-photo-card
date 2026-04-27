@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<div id='npc-hidden-container' style='position:absolute; left:-9999px; top:-9999px;'>
+<div id='npc-hidden-container' style='position:fixed; left:-9999px; top:-9999px; z-index:-9999;'>
     <div id='npc-card-capture' style='width:<?php echo esc_attr($card_w); ?>px; height:<?php echo esc_attr($card_h); ?>px; position:relative; overflow:hidden; font-family:"Noto Sans Bengali",sans-serif; background:#fff; display:flex; flex-direction:column;'>
 
         <!-- 1. IMAGE AREA -->

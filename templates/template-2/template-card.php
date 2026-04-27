@@ -38,7 +38,7 @@ $t2_line2 = isset($t2_title_parts[1]) ? trim($t2_title_parts[1]) : '';
 $t2_line3 = isset($t2_title_parts[2]) ? trim($t2_title_parts[2]) : '';
 $t2_line3_color = $footer_bg; // 3rd line uses footer bg color
 ?>
-<div id='npc-hidden-container' style='position:absolute; left:-9999px; top:-9999px;'>
+<div id='npc-hidden-container' style='position:fixed; left:-9999px; top:-9999px; z-index:-9999;'>
     <div id='npc-card-capture'
         style='width:<?php echo esc_attr($card_w); ?>px; height:<?php echo esc_attr($card_h); ?>px; position:relative; overflow:hidden; font-family:"Noto Sans Bengali",sans-serif; background:#fff; display:flex; flex-direction:column;'>
 
