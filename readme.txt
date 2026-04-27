@@ -46,6 +46,9 @@ Currently, the button appears on standard WordPress "Posts".
 
 == Changelog ==
 
+= 1.2.0 =
+* Added: New template system added with multiple professional photo card designs.
+
 = 1.1.0 =
 * Added: Option to select from 20 bundled popular Bangla fonts for the card Title and Date badge. Downloaded seamlessly from local plugin files.
 * Added: Social Media Badges repeater option. Users can now add multiple social media pages/handles along with predefined SVG icons or custom image icons directly to the footer of the generated photo cards.
