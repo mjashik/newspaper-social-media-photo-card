@@ -13,15 +13,19 @@ class MJASHIK_NPC_Post_Integration {
     public function __construct() {
         // Admin Hooks
         add_action('admin_enqueue_scripts', array($this, 'mjashik_admin_enqueue_scripts'));
-        add_action('edit_form_after_title', array($this, 'mjashik_add_admin_download_button'));
-        add_action('admin_footer', array($this, 'mjashik_render_hidden_card'));
+        add_action('edit_form_after_title',  array($this, 'mjashik_add_admin_download_button'));
+        add_action('admin_footer',           array($this, 'mjashik_render_hidden_card'));
 
         // Frontend Hooks
         if (get_option('mjashik_npc_show_download_button', 'yes') === 'yes') {
-            add_action('wp_enqueue_scripts', array($this, 'mjashik_frontend_enqueue_scripts'));
-            add_filter('the_content', array($this, 'mjashik_add_frontend_download_button'));
-            add_action('wp_footer', array($this, 'mjashik_render_hidden_card'));
+            add_action('wp_enqueue_scripts',  array($this, 'mjashik_frontend_enqueue_scripts'));
+            add_filter('the_content',         array($this, 'mjashik_add_frontend_download_button'));
+            add_action('wp_footer',           array($this, 'mjashik_render_hidden_card'));
         }
+
+        // AJAX: standalone card renderer (theme-CSS-free iframe approach)
+        add_action('wp_ajax_npc_render_card',        array($this, 'npc_render_card_standalone'));
+        add_action('wp_ajax_nopriv_npc_render_card', array($this, 'npc_render_card_standalone'));
     }
     
     /**
@@ -72,6 +76,8 @@ class MJASHIK_NPC_Post_Integration {
             
             wp_localize_script('mjashik-npc-admin-js', 'mjashik_npc_data', array(
                 'post_id'         => isset($post) ? $post->ID : 0,
+                'ajax_url'        => admin_url('admin-ajax.php'),
+                'nonce'           => wp_create_nonce('npc_render_card'),
                 'generating_text' => __('Generating...', 'newspaper-social-media-photo-card'),
                 'download_text'   => __('Download Photo Card', 'newspaper-social-media-photo-card'),
             ));
@@ -126,6 +132,8 @@ class MJASHIK_NPC_Post_Integration {
             wp_enqueue_script('mjashik-npc-admin-js', MJASHIK_NPC_PLUGIN_URL . 'assets/js/admin.js', array('jquery', 'html2canvas', 'mjashik-npc-template-card-js'), MJASHIK_NPC_VERSION, true);
             wp_localize_script('mjashik-npc-admin-js', 'mjashik_npc_data', array(
                 'post_id'         => isset($post) ? $post->ID : 0,
+                'ajax_url'        => admin_url('admin-ajax.php'),
+                'nonce'           => wp_create_nonce('npc_render_card'),
                 'generating_text' => esc_html__('Generating...', 'newspaper-social-media-photo-card'),
                 'download_text'   => esc_html__('Download Photo Card', 'newspaper-social-media-photo-card'),
             ));
@@ -250,4 +258,89 @@ class MJASHIK_NPC_Post_Integration {
         $active_tpl = MJASHIK_NPC_Template_Loader::get_active_template();
         MJASHIK_NPC_Template_Loader::include_template($active_tpl, 'template-card.php', $card_vars);
     }
+
+    /**
+     * AJAX endpoint to render the card HTML inside a clean iframe
+     */
+    public function npc_render_card_standalone() {
+        check_ajax_referer('npc_render_card', 'nonce');
+
+        $post_id = isset($_GET['post_id']) ? intval($_GET['post_id']) : 0;
+        $_post = get_post($post_id);
+        if (!$_post || $_post->post_type !== 'post') {
+            wp_die('Invalid post');
+        }
+
+        $post_date = $_post->post_date;
+        $post_title = $_post->post_title;
+        
+        // Settings
+        $logo_url       = get_option('mjashik_npc_logo_url');
+        $logo_shadow    = get_option('mjashik_npc_logo_shadow_color', '#000000');
+        $font_color     = get_option('mjashik_npc_font_color', '#ffffff');
+        $title_area_bg  = get_option('mjashik_npc_title_area_bg_color', '#AA0001');
+        $date_bg        = get_option('mjashik_npc_date_bg_color', '#AA0001');
+        $date_color     = get_option('mjashik_npc_date_text_color', '#ffffff');
+        $footer_bg      = get_option('mjashik_npc_footer_bg_color', '#AA0001');
+        $footer_color   = get_option('mjashik_npc_footer_text_color', '#ffffff');
+        $date_format    = get_option('mjashik_npc_date_format', 'd F Y');
+        $website_url    = get_option('mjashik_npc_website_url', 'www.hostbuybd.com');
+        $title_fs       = get_option('mjashik_npc_title_font_size', 42);
+        $footer_fs      = get_option('mjashik_npc_footer_font_size', 22);
+        $title_font     = get_option('mjashik_npc_title_font', 'SolaimanLipi');
+        $date_font      = get_option('mjashik_npc_date_font', 'SolaimanLipi');
+        
+        $social_raw     = get_option('mjashik_npc_social_links', '[]');
+        $social_links   = json_decode($social_raw, true);
+        if (!is_array($social_links)) $social_links = array();
+        
+        $thumbnail_url = $post_id ? get_the_post_thumbnail_url($post_id, 'full') : '';
+        $date  = date_i18n($date_format, strtotime($post_date));
+        $title = $post_title;
+
+        // Layout Config — dynamic: image flex-grows, title auto-height, footer fixed
+        $card_w   = 800;
+        $card_h   = 800;
+        $footer_h = 80;
+
+        // SVG icon callable — passed into template scope
+        $post_obj = $this;
+        $mjashik_social_icon_fn = function($type, $color) use ($post_obj) {
+            return $post_obj->mjashik_get_social_icon_svg($type, $color);
+        };
+
+        // Bundle vars for the template
+        $card_vars = compact(
+            'logo_url', 'logo_shadow', 'font_color', 'title_area_bg',
+            'date_bg', 'date_color', 'footer_bg', 'footer_color',
+            'date_format', 'website_url', 'title_fs', 'footer_fs',
+            'title_font', 'date_font', 'social_links',
+            'thumbnail_url', 'date', 'title',
+            'card_w', 'card_h', 'footer_h',
+            'mjashik_social_icon_fn'
+        );
+
+        $active_tpl = MJASHIK_NPC_Template_Loader::get_active_template();
+
+        ?>
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { margin: 0; padding: 0; background: transparent; }
+        /* Reset the container position so it shows normally in the iframe */
+        #npc-hidden-container { position: relative !important; left: 0 !important; top: 0 !important; z-index: 1 !important; }
+    </style>
+    <link rel='stylesheet' href='<?php echo esc_url(MJASHIK_NPC_PLUGIN_URL . 'assets/css/bangla-fonts.css'); ?>' media='all' />
+    <link rel='stylesheet' href='<?php echo esc_url(MJASHIK_NPC_PLUGIN_URL . 'assets/css/admin.css'); ?>' media='all' />
+</head>
+<body>
+    <?php MJASHIK_NPC_Template_Loader::include_template($active_tpl, 'template-card.php', $card_vars); ?>
+</body>
+</html>
+        <?php
+        wp_die();
+    }
 }
+

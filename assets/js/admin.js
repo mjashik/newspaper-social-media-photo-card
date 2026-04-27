@@ -153,89 +153,88 @@ jQuery(document).ready(function ($) {
             $btn.html('<span class="dashicons dashicons-update"></span> Generating...');
             $loading.show();
 
-            var element = document.querySelector('#npc-card-capture');
-            if (!element) {
-                alert('Error: Photo Card Template not found. Please reload the page.');
+            var ajaxUrl = mjashik_npc_data.ajax_url + '?action=npc_render_card&nonce=' + mjashik_npc_data.nonce + '&post_id=' + mjashik_npc_data.post_id;
+
+            // ── Create hidden iframe for pure CSS isolation ──────────
+            var iframe = document.createElement('iframe');
+            iframe.style.position = 'fixed';
+            iframe.style.left = '-9999px';
+            iframe.style.top = '-9999px';
+            iframe.style.width = '800px';
+            iframe.style.height = '800px';
+            iframe.style.visibility = 'hidden';
+            iframe.style.border = 'none';
+            document.body.appendChild(iframe);
+
+            iframe.onload = function () {
+                try {
+                    var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    var element = iframeDoc.querySelector('#npc-card-capture');
+
+                    if (!element) {
+                        throw new Error('Card template not found in iframe.');
+                    }
+
+                    // Resolve template hooks from parent window
+                    var hooks = window.npcTemplateHooks || {};
+                    var preProcess  = typeof hooks.preProcess  === 'function' ? hooks.preProcess  : function () { return Promise.resolve(); };
+                    var postProcess = typeof hooks.postProcess === 'function' ? hooks.postProcess : function () {};
+
+                    // Wait for fonts inside the iframe
+                    var fontsReady = iframe.contentWindow.document.fonts && iframe.contentWindow.document.fonts.ready
+                        ? iframe.contentWindow.document.fonts.ready
+                        : Promise.resolve();
+
+                    fontsReady.then(function () {
+                        return preProcess(element);
+                    })
+                    .then(function () {
+                        return html2canvas(element, {
+                            useCORS:         true,
+                            scale:           2,
+                            backgroundColor: '#ffffff',
+                            allowTaint:      true,
+                            logging:         false,
+                            width:           800,
+                            height:          800,
+                            windowWidth:     800,
+                            windowHeight:    800
+                        });
+                    })
+                    .then(function (canvas) {
+                        postProcess(element);
+
+                        var link      = document.createElement('a');
+                        link.download = 'news-card-' + (mjashik_npc_data.post_id || 'image') + '.png';
+                        link.href     = canvas.toDataURL('image/png');
+                        link.click();
+
+                        cleanup();
+                    })
+                    .catch(function (error) {
+                        postProcess(element);
+                        console.error('Photo Card Gen Error:', error);
+                        alert('Error generating card. Check console for details.');
+                        cleanup();
+                    });
+
+                } catch (err) {
+                    console.error('Iframe processing error:', err);
+                    alert('Error loading card template. Check console.');
+                    cleanup();
+                }
+            };
+
+            function cleanup() {
+                if (iframe && iframe.parentNode) {
+                    document.body.removeChild(iframe);
+                }
                 $loading.hide();
                 $btn.removeClass('disabled').prop('disabled', false).html(originalText);
-                return;
             }
 
-            // ── Move hidden container to <body> to escape theme CSS ──────────
-            // Theme footer/main/article elements often apply flex, display, or
-            // other CSS that corrupts the card layout on the frontend.
-            // Moving it directly to <body> gives it a clean CSS environment.
-            var hiddenContainer     = document.getElementById('npc-hidden-container');
-            var originalParent      = hiddenContainer ? hiddenContainer.parentNode      : null;
-            var originalNextSibling = hiddenContainer ? hiddenContainer.nextSibling     : null;
-
-            function moveContainerToBody() {
-                if (hiddenContainer && hiddenContainer.parentNode !== document.body) {
-                    document.body.appendChild(hiddenContainer);
-                }
-            }
-
-            function restoreContainerParent() {
-                if (hiddenContainer && originalParent && hiddenContainer.parentNode === document.body) {
-                    if (originalNextSibling) {
-                        originalParent.insertBefore(hiddenContainer, originalNextSibling);
-                    } else {
-                        originalParent.appendChild(hiddenContainer);
-                    }
-                }
-            }
-
-            // Resolve template hooks (fall back to no-op if card.js not loaded)
-            var hooks = window.npcTemplateHooks || {};
-            var preProcess  = typeof hooks.preProcess  === 'function' ? hooks.preProcess  : function () { return Promise.resolve(); };
-            var postProcess = typeof hooks.postProcess === 'function' ? hooks.postProcess : function () {};
-
-            // Run: wait for fonts → move→body → preProcess → html2canvas → postProcess → restore → download
-            // Wait for all web fonts (Bengali etc.) to be ready before capturing.
-            // On the frontend page, fonts may still be loading when the button is clicked,
-            // causing html2canvas to use fallback fonts → different text metrics → layout shift.
-            var fontsReady = document.fonts && document.fonts.ready
-                ? document.fonts.ready
-                : Promise.resolve();
-
-            fontsReady.then(function () {
-                moveContainerToBody(); // escape theme CSS before capture
-
-                return preProcess(element);
-            })
-                .then(function () {
-                    return html2canvas(element, {
-                        useCORS:         true,
-                        scale:           2,
-                        backgroundColor: '#ffffff',
-                        allowTaint:      true,
-                        logging:         false,
-                        width:           800, // card is always 800px wide
-                        height:          800, // card is always 800px tall
-                        windowWidth:     800, // prevent viewport-dependent CSS
-                        windowHeight:    800
-                    });
-                })
-                .then(function (canvas) {
-                    postProcess(element);
-                    restoreContainerParent(); // put container back
-
-                    var link      = document.createElement('a');
-                    link.download = 'news-card-' + (mjashik_npc_data.post_id || 'image') + '.png';
-                    link.href     = canvas.toDataURL('image/png');
-                    link.click();
-
-                    $loading.hide();
-                    $btn.removeClass('disabled').prop('disabled', false).html(originalText);
-                })
-                .catch(function (error) {
-                    postProcess(element);
-                    restoreContainerParent(); // restore even on error
-                    console.error('Photo Card Gen Error:', error);
-                    alert('Error generating card. Check console for details.');
-                    $loading.hide();
-                    $btn.removeClass('disabled').prop('disabled', false).html(originalText);
-                });
+            // Trigger the iframe load
+            iframe.src = ajaxUrl;
         });
     }
 });
