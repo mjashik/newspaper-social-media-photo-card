@@ -190,10 +190,19 @@ jQuery(document).ready(function ($) {
             var preProcess  = typeof hooks.preProcess  === 'function' ? hooks.preProcess  : function () { return Promise.resolve(); };
             var postProcess = typeof hooks.postProcess === 'function' ? hooks.postProcess : function () {};
 
-            // Run: move→body → preProcess → html2canvas → postProcess → restore → download
-            moveContainerToBody(); // escape theme CSS before capture
+            // Run: wait for fonts → move→body → preProcess → html2canvas → postProcess → restore → download
+            // Wait for all web fonts (Bengali etc.) to be ready before capturing.
+            // On the frontend page, fonts may still be loading when the button is clicked,
+            // causing html2canvas to use fallback fonts → different text metrics → layout shift.
+            var fontsReady = document.fonts && document.fonts.ready
+                ? document.fonts.ready
+                : Promise.resolve();
 
-            preProcess(element)
+            fontsReady.then(function () {
+                moveContainerToBody(); // escape theme CSS before capture
+
+                return preProcess(element);
+            })
                 .then(function () {
                     return html2canvas(element, {
                         useCORS:         true,
@@ -201,8 +210,10 @@ jQuery(document).ready(function ($) {
                         backgroundColor: '#ffffff',
                         allowTaint:      true,
                         logging:         false,
-                        width:           element.offsetWidth  || 800,
-                        height:          element.offsetHeight || 800
+                        width:           800, // card is always 800px wide
+                        height:          800, // card is always 800px tall
+                        windowWidth:     800, // prevent viewport-dependent CSS
+                        windowHeight:    800
                     });
                 })
                 .then(function (canvas) {
