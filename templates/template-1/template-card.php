@@ -32,9 +32,9 @@ if (!defined('ABSPATH')) {
             <div style='position:absolute; bottom:0; left:0; width:100%; height:160px; background:linear-gradient(to top,rgba(0,0,0,0.65),transparent); z-index:10;'></div>
 
             <!-- Logo (Top Left) -->
-            <div style='position:absolute; top:28px; left:28px; z-index:30; filter:drop-shadow(0 2px 6px <?php echo esc_attr($logo_shadow); ?>);'>
+            <div style='position:absolute; top:28px; left:28px; z-index:30; display:inline-flex; align-items:center; justify-content:center;'>
                 <?php if ($logo_url): ?>
-                    <img src='<?php echo esc_url($logo_url); ?>' id='npc-logo-img' data-shadow='<?php echo esc_attr($logo_shadow); ?>' style='height:auto; width:auto; max-width:240px; display:block;' crossorigin='anonymous'>
+                    <img src='<?php echo esc_url($logo_url); ?>' id='npc-logo-img' data-shadow='<?php echo esc_attr($logo_shadow); ?>' style='height:auto; width:auto; max-width:240px; display:block; filter:drop-shadow(0 0 20px <?php echo esc_attr($logo_shadow); ?>) drop-shadow(0 0 10px <?php echo esc_attr($logo_shadow); ?>);' crossorigin='anonymous'>
                 <?php endif; ?>
             </div>
 
