@@ -161,12 +161,38 @@ jQuery(document).ready(function ($) {
                 return;
             }
 
+            // ── Move hidden container to <body> to escape theme CSS ──────────
+            // Theme footer/main/article elements often apply flex, display, or
+            // other CSS that corrupts the card layout on the frontend.
+            // Moving it directly to <body> gives it a clean CSS environment.
+            var hiddenContainer     = document.getElementById('npc-hidden-container');
+            var originalParent      = hiddenContainer ? hiddenContainer.parentNode      : null;
+            var originalNextSibling = hiddenContainer ? hiddenContainer.nextSibling     : null;
+
+            function moveContainerToBody() {
+                if (hiddenContainer && hiddenContainer.parentNode !== document.body) {
+                    document.body.appendChild(hiddenContainer);
+                }
+            }
+
+            function restoreContainerParent() {
+                if (hiddenContainer && originalParent && hiddenContainer.parentNode === document.body) {
+                    if (originalNextSibling) {
+                        originalParent.insertBefore(hiddenContainer, originalNextSibling);
+                    } else {
+                        originalParent.appendChild(hiddenContainer);
+                    }
+                }
+            }
+
             // Resolve template hooks (fall back to no-op if card.js not loaded)
             var hooks = window.npcTemplateHooks || {};
             var preProcess  = typeof hooks.preProcess  === 'function' ? hooks.preProcess  : function () { return Promise.resolve(); };
             var postProcess = typeof hooks.postProcess === 'function' ? hooks.postProcess : function () {};
 
-            // Run: preProcess → html2canvas → postProcess → download
+            // Run: move→body → preProcess → html2canvas → postProcess → restore → download
+            moveContainerToBody(); // escape theme CSS before capture
+
             preProcess(element)
                 .then(function () {
                     return html2canvas(element, {
@@ -174,11 +200,14 @@ jQuery(document).ready(function ($) {
                         scale:           2,
                         backgroundColor: '#ffffff',
                         allowTaint:      true,
-                        logging:         false
+                        logging:         false,
+                        width:           element.offsetWidth  || 800,
+                        height:          element.offsetHeight || 800
                     });
                 })
                 .then(function (canvas) {
                     postProcess(element);
+                    restoreContainerParent(); // put container back
 
                     var link      = document.createElement('a');
                     link.download = 'news-card-' + (mjashik_npc_data.post_id || 'image') + '.png';
@@ -190,6 +219,7 @@ jQuery(document).ready(function ($) {
                 })
                 .catch(function (error) {
                     postProcess(element);
+                    restoreContainerParent(); // restore even on error
                     console.error('Photo Card Gen Error:', error);
                     alert('Error generating card. Check console for details.');
                     $loading.hide();
