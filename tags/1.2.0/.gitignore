@@ -1,0 +1,11 @@
+# SVN Directories
+wp-assets-svn/
+wp-trunk-svn/
+
+# Temporary Scripts
+copy-to-trunk.ps1
+resize.ps1
+resize2.ps1
+
+# AI context
+.gemini/
