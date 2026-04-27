@@ -30,13 +30,10 @@ $t2_url_fs = max(14, $footer_fs - 2);
 $t2_wm_opacity = ((int) get_option('mjashik_npc_watermark_opacity', 8)) / 100;
 ?>
 <?php
-// Split title logic: up to 3 lines separated by pipe |
-// Line 1 → brand/red color, Line 2 → black, Line 3 → footer_bg color
-$t2_title_parts = explode('|', $title);
-$t2_line1 = trim($t2_title_parts[0]);
-$t2_line2 = isset($t2_title_parts[1]) ? trim($t2_title_parts[1]) : '';
-$t2_line3 = isset($t2_title_parts[2]) ? trim($t2_title_parts[2]) : '';
-$t2_line3_color = $footer_bg; // 3rd line uses footer bg color
+// Colors for dynamic line wrapping
+$t2_line1_color = $t2_title_text;
+$t2_line2_color = '#000000';
+$t2_line3_color = $footer_bg;
 ?>
 <div id='npc-hidden-container' style='position:fixed; left:-9999px; top:-9999px; z-index:-9999;'>
     <div id='npc-card-capture'
@@ -44,7 +41,7 @@ $t2_line3_color = $footer_bg; // 3rd line uses footer bg color
 
         <!-- ═══════════════════════════════════════
          1. TITLE AREA — centered layout:
-            Title (top, red+black split)
+            Title (red+black split)
             Logo circle (center, below title)
             Date badge (straddles separator)
          ═══════════════════════════════════════ -->
@@ -60,16 +57,14 @@ $t2_line3_color = $footer_bg; // 3rd line uses footer bg color
             <?php endif; ?>
 
             <!-- Headline — full width, centered, 10px top/bottom padding -->
-            <!-- Title lines split by | : Line1=red(brand), Line2=black, Line3=footer_bg -->
+            <!-- Auto-colored by JS based on wrapped lines -->
             <div style='position:relative; z-index:10; width:100%; padding:10px 30px 10px 30px; box-sizing:border-box; text-align:center;'>
-                <h1 style='margin:0; padding:0; font-size:<?php echo esc_attr($title_fs); ?>px; line-height:1.35; font-weight:800; font-family:<?php echo esc_attr($title_font); ?>,sans-serif; word-break:break-word; text-align:center; width:100%;'>
-                    <span style='display:block; color:<?php echo esc_attr($t2_title_text); ?>;'><?php echo esc_html($t2_line1); ?></span>
-                    <?php if ($t2_line2): ?>
-                        <span style='display:block; color:#000000; margin-top:6px;'><?php echo esc_html($t2_line2); ?></span>
-                    <?php endif; ?>
-                    <?php if ($t2_line3): ?>
-                        <span style='display:block; color:<?php echo esc_attr($t2_line3_color); ?>; margin-top:6px;'><?php echo esc_html($t2_line3); ?></span>
-                    <?php endif; ?>
+                <h1 id='npc-t2-headline'
+                    data-color-1='<?php echo esc_attr($t2_line1_color); ?>'
+                    data-color-2='<?php echo esc_attr($t2_line2_color); ?>'
+                    data-color-3='<?php echo esc_attr($t2_line3_color); ?>'
+                    style='margin:0; padding:0; font-size:<?php echo esc_attr($title_fs); ?>px; line-height:1.35; font-weight:800; font-family:<?php echo esc_attr($title_font); ?>,sans-serif; word-break:break-word; text-align:center; width:100%; color:<?php echo esc_attr($t2_line1_color); ?>;'>
+                    <?php echo esc_html($title); ?>
                 </h1>
             </div>
 

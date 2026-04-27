@@ -33,13 +33,8 @@ $t2_url_fs = max(14, $prev_footer_size - 2);
 ?>
 
 <?php
-// Split title: up to 3 lines separated by |
-// Line1=red, Line2=black, Line3=footer_bg color
-$t2_title_parts = explode('|', $demo_title);
-$t2_line1 = trim($t2_title_parts[0]);
-$t2_line2 = isset($t2_title_parts[1]) ? trim($t2_title_parts[1]) : '';
-$t2_line3 = isset($t2_title_parts[2]) ? trim($t2_title_parts[2]) : '';
-$t2_line3_color = $prev_footer_bg; // 3rd line uses footer bg color
+// 3rd line uses footer bg color
+$t2_line3_color = $prev_footer_bg; 
 ?>
 <!-- Outer wrapper -->
 <div
@@ -69,18 +64,58 @@ $t2_line3_color = $prev_footer_bg; // 3rd line uses footer bg color
                 <?php endif; ?>
 
                 <!-- Headline — full width, centered, 10px top/bottom padding -->
-                <!-- Line1=red, Line2=black, Line3=footer_bg color -->
                 <div style="position:relative; z-index:10; width:100%; padding:10px 30px 10px 30px; box-sizing:border-box; text-align:center;">
-                    <h1 style="margin:0; padding:0; font-size:<?php echo esc_attr($prev_title_size); ?>px; line-height:1.35; font-weight:800; color:<?php echo esc_attr($t2_title_text); ?>; font-family:<?php echo esc_attr($prev_title_font); ?>,sans-serif; word-break:break-word; text-align:center; width:100%;">
-                        <div><?php echo esc_html($t2_line1); ?></div>
-                        <?php if ($t2_line2): ?>
-                            <div style="color:#000000; margin-top:6px;"><?php echo esc_html($t2_line2); ?></div>
-                        <?php endif; ?>
-                        <?php if ($t2_line3): ?>
-                            <div style="color:<?php echo esc_attr($t2_line3_color); ?>; margin-top:6px;"><?php echo esc_html($t2_line3); ?></div>
-                        <?php endif; ?>
+                    <h1 id="npc-t2-preview-headline"
+                        data-color-1="<?php echo esc_attr($t2_title_text); ?>"
+                        data-color-2="#000000"
+                        data-color-3="<?php echo esc_attr($t2_line3_color); ?>"
+                        style="margin:0; padding:0; font-size:<?php echo esc_attr($prev_title_size); ?>px; line-height:1.35; font-weight:800; font-family:<?php echo esc_attr($prev_title_font); ?>,sans-serif; word-break:break-word; text-align:center; width:100%; color:<?php echo esc_attr($t2_title_text); ?>;">
+                        <?php echo esc_html(str_replace('|', ' ', $demo_title)); ?>
                     </h1>
                 </div>
+                
+                <script>
+                (function(){
+                    var h1 = document.getElementById('npc-t2-preview-headline');
+                    if(!h1) return;
+                    var colors = [
+                        h1.getAttribute('data-color-1'),
+                        h1.getAttribute('data-color-2'),
+                        h1.getAttribute('data-color-3')
+                    ];
+                    var text = h1.textContent.trim();
+                    var words = text.split(/\\s+/);
+                    h1.innerHTML = '';
+                    var spans = [];
+                    words.forEach(function(word) {
+                        var span = document.createElement('span');
+                        span.textContent = word + ' ';
+                        h1.appendChild(span);
+                        spans.push(span);
+                    });
+                    
+                    // Allow browser to reflow
+                    setTimeout(function(){
+                        var currentOffset = -1;
+                        var currentLine = [];
+                        var lines = [];
+                        spans.forEach(function(span) {
+                            if (span.offsetTop !== currentOffset) {
+                                currentOffset = span.offsetTop;
+                                if (currentLine.length > 0) lines.push(currentLine);
+                                currentLine = [];
+                            }
+                            currentLine.push(span);
+                        });
+                        if (currentLine.length > 0) lines.push(currentLine);
+                        
+                        lines.forEach(function(line, idx) {
+                            var color = colors[idx] || colors[colors.length-1];
+                            line.forEach(function(span) { span.style.color = color; });
+                        });
+                    }, 100);
+                })();
+                </script>
 
                 <!-- Logo — height fixed 45px, width auto; shadow via CSS filter in preview -->
                 <?php if ($prev_logo): ?>

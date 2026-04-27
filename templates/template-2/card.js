@@ -157,16 +157,91 @@
     }
 
     /* ──────────────────────────────────────────────
+     * Dynamic Line Colorization
+     * Wraps words in spans to detect wrapping and
+     * apply colors to line 1, line 2, line 3 based
+     * on their offsetTop.
+     * ────────────────────────────────────────────── */
+    function colorizeLines(container) {
+        var h1 = container.querySelector('#npc-t2-headline');
+        if (!h1 || h1.hasAttribute('data-colorized')) return Promise.resolve();
+
+        var colors = [
+            h1.getAttribute('data-color-1') || 'red',
+            h1.getAttribute('data-color-2') || '#000000',
+            h1.getAttribute('data-color-3') || 'red'
+        ];
+
+        // Save original HTML
+        h1._originalHTML = h1.innerHTML;
+
+        var text = h1.textContent.trim();
+        var words = text.split(/\s+/);
+        h1.innerHTML = '';
+
+        // Wrap each word in a span
+        var spans = [];
+        words.forEach(function(word) {
+            var span = document.createElement('span');
+            span.textContent = word + ' ';
+            h1.appendChild(span);
+            spans.push(span);
+        });
+
+        // Group by lines based on offsetTop
+        var lines = [];
+        var currentLine = [];
+        var currentOffset = -1;
+
+        spans.forEach(function(span) {
+            if (span.offsetTop !== currentOffset) {
+                currentOffset = span.offsetTop;
+                if (currentLine.length > 0) {
+                    lines.push(currentLine);
+                }
+                currentLine = [];
+            }
+            currentLine.push(span);
+        });
+        if (currentLine.length > 0) {
+            lines.push(currentLine);
+        }
+
+        // Apply colors per line
+        lines.forEach(function(line, index) {
+            var color = colors[index] || colors[colors.length - 1]; // fallback
+            line.forEach(function(span) {
+                span.style.color = color;
+            });
+        });
+
+        h1.setAttribute('data-colorized', 'true');
+        return Promise.resolve();
+    }
+
+    function restoreLineColors(container) {
+        var h1 = container.querySelector('#npc-t2-headline');
+        if (h1 && h1._originalHTML) {
+            h1.innerHTML = h1._originalHTML;
+            h1.removeAttribute('data-colorized');
+            delete h1._originalHTML;
+        }
+    }
+
+    /* ──────────────────────────────────────────────
      * Register hooks
      * ────────────────────────────────────────────── */
 
     /**
      * preProcess(container) → Promise
-     * 1. Convert SVGs to PNG
-     * 2. Bake logo shadow via canvas
+     * 1. Dynamic line colors
+     * 2. Convert SVGs to PNG
+     * 3. Bake logo shadow via canvas
      */
     window.npcTemplateHooks.preProcess = function (container) {
-        return convertSvgsToPng(container).then(function () {
+        return colorizeLines(container).then(function() {
+            return convertSvgsToPng(container);
+        }).then(function () {
             return bakeLogoShadow(container);
         });
     };
@@ -178,5 +253,6 @@
     window.npcTemplateHooks.postProcess = function (container) {
         restoreLogoShadow(container);
         restoreSvgSrcs(container);
+        restoreLineColors(container);
     };
 })();
